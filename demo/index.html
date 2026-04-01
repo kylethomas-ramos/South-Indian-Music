@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shaping Time — Tala Pathway Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a12;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .controls label {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .controls input[type="checkbox"] {
+      accent-color: #7b8cde;
+    }
+    .controls button {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #e0e0e0;
+      padding: 5px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .controls button:hover { background: rgba(255,255,255,0.18); }
+    .controls button.active { background: rgba(123,140,222,0.35); border-color: #7b8cde; }
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .speed-control input[type="range"] {
+      width: 80px;
+      accent-color: #7b8cde;
+    }
+    canvas { flex: 1; display: block; }
+    #info-panel {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(10,10,18,0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 380px;
+      backdrop-filter: blur(8px);
+    }
+    #info-panel h3 { font-size: 14px; margin-bottom: 6px; color: #7b8cde; }
+    #convergence-flash {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(255,220,120,0.12) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .legend {
+      position: absolute;
+      top: 80px;
+      right: 16px;
+      background: rgba(10,10,18,0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.8;
+      backdrop-filter: blur(8px);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Shaping Time</h1>
+    <div class="controls">
+      <label><input type="checkbox" id="toggle-tisra" checked> Tisra (3)</label>
+      <label><input type="checkbox" id="toggle-chatusra" checked> Chatusra (4)</label>
+      <label><input type="checkbox" id="toggle-khanda"> Khanda (5)</label>
+      <label><input type="checkbox" id="toggle-misra"> Misra (7)</label>
+      <label><input type="checkbox" id="toggle-sankirna"> Sankirna (9)</label>
+      <span style="color:rgba(255,255,255,0.3)">|</span>
+      <button id="btn-play" class="active">Play</button>
+      <button id="btn-reset">Reset</button>
+      <div class="speed-control">
+        <span>Tempo</span>
+        <input type="range" id="speed" min="20" max="200" value="72">
+        <span id="speed-label">72 BPM</span>
+      </div>
+    </div>
+  </header>
+
+  <canvas id="canvas"></canvas>
+  <div id="convergence-flash"></div>
+
+  <div class="legend" id="legend"></div>
+
+  <div id="info-panel">
+    <h3>What you're seeing</h3>
+    Each shape is an <strong>eka tala</strong> cycle. Dots (walkers) traverse the vertices — one vertex per beat.
+    When walkers from different cycles land on a <strong>shared beat</strong> (beat 1), a convergence flash appears.
+    Toggle cycles on/off above to explore layered polyrhythms.
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const flash = document.getElementById('convergence-flash');
+
+    // --- Tala definitions ---
+    const talas = [
+      { id: 'tisra',    name: 'Tisra Jati Eka',    beats: 3, color: '#5ec4c8', sides: 3 },
+      { id: 'chatusra', name: 'Chatusra Jati Eka',  beats: 4, color: '#c8a05e', sides: 4 },
+      { id: 'khanda',   name: 'Khanda Jati Eka',    beats: 5, color: '#8e6cc8', sides: 5 },
+      { id: 'misra',    name: 'Misra Jati Eka',     beats: 7, color: '#c86c6c', sides: 7 },
+      { id: 'sankirna', name: 'Sankirna Jati Eka',   beats: 9, color: '#6cc87b', sides: 9 },
+    ];
+
+    let playing = true;
+    let bpm = 72;
+    let globalBeat = 0;       // fractional beat counter
+    let lastTimestamp = null;
+    let activeIds = new Set(['tisra', 'chatusra']);
+
+    // --- Audio context for beat sounds ---
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    function playTick(freq, volume, duration) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // --- Resize ---
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // --- Controls ---
+    talas.forEach(t => {
+      const cb = document.getElementById('toggle-' + t.id);
+      cb.addEventListener('change', () => {
+        if (cb.checked) activeIds.add(t.id);
+        else activeIds.delete(t.id);
+        updateLegend();
+      });
+    });
+
+    document.getElementById('btn-play').addEventListener('click', function() {
+      initAudio();
+      playing = !playing;
+      this.textContent = playing ? 'Play' : 'Paused';
+      this.classList.toggle('active', playing);
+      if (playing) { lastTimestamp = null; requestAnimationFrame(animate); }
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      globalBeat = 0;
+      lastTimestamp = null;
+    });
+
+    const speedSlider = document.getElementById('speed');
+    const speedLabel = document.getElementById('speed-label');
+    speedSlider.addEventListener('input', () => {
+      bpm = parseInt(speedSlider.value);
+      speedLabel.textContent = bpm + ' BPM';
+    });
+
+    // Click canvas to init audio
+    canvas.addEventListener('click', initAudio, { once: true });
+
+    // --- Legend ---
+    function updateLegend() {
+      const container = document.getElementById('legend');
+      container.innerHTML = talas
+        .filter(t => activeIds.has(t.id))
+        .map(t => `<div class="legend-item"><div class="legend-dot" style="background:${t.color}"></div>${t.name} (${t.beats} beats)</div>`)
+        .join('');
+    }
+    updateLegend();
+
+    // --- Geometry helpers ---
+    function getPolygonVertices(cx, cy, radius, sides, rotationOffset) {
+      const verts = [];
+      for (let i = 0; i < sides; i++) {
+        const angle = rotationOffset + (2 * Math.PI * i) / sides - Math.PI / 2;
+        verts.push({ x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) });
+      }
+      return verts;
+    }
+
+    function lerp(a, b, t) {
+      return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+    }
+
+    function getPositionOnPath(verts, beatFraction) {
+      const n = verts.length;
+      const totalProgress = ((beatFraction % n) + n) % n;
+      const segIndex = Math.floor(totalProgress);
+      const segT = totalProgress - segIndex;
+      return lerp(verts[segIndex], verts[(segIndex + 1) % n], segT);
+    }
+
+    // --- Drawing ---
+    function drawPath(verts, color, alpha) {
+      ctx.beginPath();
+      ctx.moveTo(verts[0].x, verts[0].y);
+      for (let i = 1; i <= verts.length; i++) {
+        ctx.lineTo(verts[i % verts.length].x, verts[i % verts.length].y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = color + hexAlpha(alpha * 0.4);
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    function drawVertexDots(verts, color, alpha, beatInCycle) {
+      verts.forEach((v, i) => {
+        const isCurrent = Math.floor(beatInCycle) % verts.length === i;
+        const radius = isCurrent ? 6 : 3;
+        const a = isCurrent ? alpha : alpha * 0.35;
+        ctx.beginPath();
+        ctx.arc(v.x, v.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = color + hexAlpha(a);
+        ctx.fill();
+
+        // Label beat number
+        if (isCurrent || true) {
+          ctx.font = '10px system-ui';
+          ctx.fillStyle = color + hexAlpha(a * 0.7);
+          ctx.fillText(i === 0 ? 'Clap' : `${i}`, v.x + 8, v.y - 6);
+        }
+      });
+    }
+
+    function drawWalker(pos, color, trail) {
+      // Trail
+      if (trail.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(trail[0].x, trail[0].y);
+        for (let i = 1; i < trail.length; i++) {
+          ctx.lineTo(trail[i].x, trail[i].y);
+        }
+        ctx.strokeStyle = color + '40';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      // Glow
+      const grd = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 20);
+      grd.addColorStop(0, color + '55');
+      grd.addColorStop(1, color + '00');
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // Dot
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 7, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    function hexAlpha(a) {
+      return Math.round(Math.max(0, Math.min(1, a)) * 255).toString(16).padStart(2, '0');
+    }
+
+    // --- Convergence detection ---
+    let lastConvergenceBeat = -1;
+    let convergenceGlow = 0;
+
+    function checkConvergence() {
+      const active = talas.filter(t => activeIds.has(t.id));
+      if (active.length < 2) return false;
+
+      const currentIntBeat = Math.floor(globalBeat);
+      if (currentIntBeat === lastConvergenceBeat) return false;
+
+      // Check if all active talas are at beat 0 (sam)
+      const allAtSam = active.every(t => currentIntBeat % t.beats === 0);
+      if (allAtSam && currentIntBeat > 0) {
+        lastConvergenceBeat = currentIntBeat;
+        return true;
+      }
+      return false;
+    }
+
+    // --- Trails ---
+    const trails = {};
+    talas.forEach(t => trails[t.id] = []);
+
+    // --- Main animation ---
+    function animate(timestamp) {
+      if (!playing) return;
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const dt = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      // Advance beat
+      const beatsPerSec = bpm / 60;
+      const prevBeat = globalBeat;
+      globalBeat += beatsPerSec * dt;
+
+      // Check for beat crossings and play sounds
+      const prevInt = Math.floor(prevBeat);
+      const curInt = Math.floor(globalBeat);
+      if (curInt > prevInt) {
+        talas.forEach(t => {
+          if (!activeIds.has(t.id)) return;
+          if (curInt % t.beats === 0) {
+            // Sam (beat 1) - louder clap sound
+            playTick(800 + talas.indexOf(t) * 100, 0.15, 0.12);
+          }
+        });
+      }
+
+      // Convergence
+      if (checkConvergence()) {
+        convergenceGlow = 1.0;
+        playTick(1200, 0.25, 0.3);
+      }
+      convergenceGlow *= 0.95;
+      flash.style.opacity = convergenceGlow;
+
+      // Clear
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Center layout
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const baseRadius = Math.min(canvas.width, canvas.height) * 0.25;
+
+      const active = talas.filter(t => activeIds.has(t.id));
+      const count = active.length;
+
+      // Position each tala path
+      active.forEach((t, i) => {
+        // Spread shapes around center if multiple
+        let px = cx, py = cy;
+        let radius = baseRadius;
+        if (count > 1) {
+          const spreadRadius = baseRadius * 0.55;
+          const angle = -Math.PI / 2 + (2 * Math.PI * i) / count;
+          px = cx + spreadRadius * Math.cos(angle);
+          py = cy + spreadRadius * Math.sin(angle);
+          radius = baseRadius * (0.65 - count * 0.04);
+        }
+
+        const rotOffset = (2 * Math.PI * i) / (count || 1) * 0.1;
+        const verts = getPolygonVertices(px, py, radius, t.sides, rotOffset);
+
+        const beatInCycle = globalBeat % t.beats;
+
+        // Draw
+        drawPath(verts, t.color, 1);
+        drawVertexDots(verts, t.color, 1, beatInCycle);
+
+        // Walker position
+        const pos = getPositionOnPath(verts, beatInCycle);
+
+        // Trail
+        if (!trails[t.id]) trails[t.id] = [];
+        trails[t.id].push({ x: pos.x, y: pos.y });
+        if (trails[t.id].length > 30) trails[t.id].shift();
+
+        drawWalker(pos, t.color, trails[t.id]);
+
+        // Tala label
+        ctx.font = 'bold 13px system-ui';
+        ctx.fillStyle = t.color + 'cc';
+        ctx.textAlign = 'center';
+        ctx.fillText(t.name, px, py + radius + 24);
+        ctx.fillStyle = t.color + '88';
+        ctx.font = '11px system-ui';
+        ctx.fillText(`Beat ${Math.floor(beatInCycle) + 1} of ${t.beats}`, px, py + radius + 40);
+        ctx.textAlign = 'left';
+      });
+
+      // Convergence marker at center
+      if (convergenceGlow > 0.05 && count > 1) {
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60 * convergenceGlow);
+        g.addColorStop(0, `rgba(255,220,120,${convergenceGlow * 0.6})`);
+        g.addColorStop(1, `rgba(255,220,120,0)`);
+        ctx.beginPath();
+        ctx.arc(cx, cy, 60 * convergenceGlow, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+
+        ctx.font = 'bold 14px system-ui';
+        ctx.fillStyle = `rgba(255,220,120,${convergenceGlow})`;
+        ctx.textAlign = 'center';
+        ctx.fillText('SAM', cx, cy + 4);
+        ctx.textAlign = 'left';
+      }
+
+      // Global beat counter
+      ctx.font = '12px system-ui';
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.fillText(`Global beat: ${Math.floor(globalBeat)}`, canvas.width - 150, canvas.height - 16);
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
