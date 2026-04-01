@@ -58,10 +58,6 @@ This distinction is critical so that observers and participants can perceive bot
 - **Gati** -- note-rate or subdivision within a beat
 - **Suladi Sapta Tala** -- the system of seven tala structures (Dhruva, Matya, Rupaka, Jhampa, Triputa, Ata, Eka), each of which can take any of the five jati-s, yielding 35 total combinations
 
-## Live Demo
-
-**[View the interactive tala pathway demo](https://kylethomas-ramos.github.io/South-Indian-Music/demo/index.html)**
-
 ## Status
 
 **Work in progress.** Currently refining the embodiment design and preparing a small demo.
