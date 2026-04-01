@@ -60,7 +60,7 @@ This distinction is critical so that observers and participants can perceive bot
 
 ## Status
 
-**Work in progress.** Currently refining the embodiment design and preparing a small demo.
+**Work in progress.** Check out the [live demo of the website](https://kylethomas-ramos.github.io/South-Indian-Music/demo/index.html)!
 
 ## Repository Structure
 
