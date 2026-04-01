@@ -68,4 +68,5 @@ This distinction is critical so that observers and participants can perceive bot
 /                   # You are here
 README.md           # This file -- project overview and plan
 FEEDBACK.md         # Professor feedback and responses
+demo/index.html     # Interactive tala pathway visualization
 ```
