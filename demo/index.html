@@ -127,6 +127,9 @@
       <label><input type="checkbox" id="toggle-misra"> Misra (7)</label>
       <label><input type="checkbox" id="toggle-sankirna"> Sankirna (9)</label>
       <span style="color:rgba(255,255,255,0.3)">|</span>
+      <button id="btn-mode-spread" class="active">Spread</button>
+      <button id="btn-mode-overlay">Overlay</button>
+      <span style="color:rgba(255,255,255,0.3)">|</span>
       <button id="btn-play" class="active">Play</button>
       <button id="btn-reset">Reset</button>
       <div class="speed-control">
@@ -145,8 +148,9 @@
   <div id="info-panel">
     <h3>What you're seeing</h3>
     Each shape is an <strong>eka tala</strong> cycle. Dots (walkers) traverse the vertices — one vertex per beat.
-    When walkers from different cycles land on a <strong>shared beat</strong> (beat 1), a convergence flash appears.
-    Toggle cycles on/off above to explore layered polyrhythms.
+    When walkers from different cycles land on <strong>beat 1 (sam)</strong>, a convergence flash appears.
+    <br><br>
+    <strong>Spread</strong> mode separates shapes. <strong>Overlay</strong> mode stacks all shapes on a shared sam vertex — walkers literally meet at the same point when cycles align.
   </div>
 
   <script>
@@ -168,6 +172,7 @@
     let globalBeat = 0;       // fractional beat counter
     let lastTimestamp = null;
     let activeIds = new Set(['tisra', 'chatusra']);
+    let viewMode = 'spread'; // 'spread' or 'overlay'
 
     // --- Audio context for beat sounds ---
     let audioCtx = null;
@@ -204,6 +209,22 @@
         else activeIds.delete(t.id);
         updateLegend();
       });
+    });
+
+    const btnSpread = document.getElementById('btn-mode-spread');
+    const btnOverlay = document.getElementById('btn-mode-overlay');
+    btnSpread.addEventListener('click', () => {
+      viewMode = 'spread';
+      btnSpread.classList.add('active');
+      btnOverlay.classList.remove('active');
+      // Clear trails on mode switch
+      talas.forEach(t => trails[t.id] = []);
+    });
+    btnOverlay.addEventListener('click', () => {
+      viewMode = 'overlay';
+      btnOverlay.classList.add('active');
+      btnSpread.classList.remove('active');
+      talas.forEach(t => trails[t.id] = []);
     });
 
     document.getElementById('btn-play').addEventListener('click', function() {
@@ -397,27 +418,39 @@
       const active = talas.filter(t => activeIds.has(t.id));
       const count = active.length;
 
+      // In overlay mode, all polygons share the same center and top vertex (sam)
+      // The top vertex is at (cx, cy - radius), i.e. straight up from center
+      // No rotation offset — all vertex 0 positions are the same point
+
       // Position each tala path
       active.forEach((t, i) => {
-        // Spread shapes around center if multiple
         let px = cx, py = cy;
         let radius = baseRadius;
-        if (count > 1) {
-          const spreadRadius = baseRadius * 0.55;
-          const angle = -Math.PI / 2 + (2 * Math.PI * i) / count;
-          px = cx + spreadRadius * Math.cos(angle);
-          py = cy + spreadRadius * Math.sin(angle);
-          radius = baseRadius * (0.65 - count * 0.04);
+
+        if (viewMode === 'spread') {
+          // Spread mode: shapes arranged around center
+          if (count > 1) {
+            const spreadRadius = baseRadius * 0.55;
+            const angle = -Math.PI / 2 + (2 * Math.PI * i) / count;
+            px = cx + spreadRadius * Math.cos(angle);
+            py = cy + spreadRadius * Math.sin(angle);
+            radius = baseRadius * (0.65 - count * 0.04);
+          }
+        } else {
+          // Overlay mode: all shapes share center, stagger radius slightly so paths are visible
+          radius = baseRadius * (0.85 + i * 0.06);
         }
 
-        const rotOffset = (2 * Math.PI * i) / (count || 1) * 0.1;
+        // No rotation offset — all shapes start from the top (vertex 0 = sam)
+        const rotOffset = viewMode === 'spread' ? (2 * Math.PI * i) / (count || 1) * 0.1 : 0;
         const verts = getPolygonVertices(px, py, radius, t.sides, rotOffset);
 
         const beatInCycle = globalBeat % t.beats;
 
-        // Draw
-        drawPath(verts, t.color, 1);
-        drawVertexDots(verts, t.color, 1, beatInCycle);
+        // Draw path (dimmer in overlay so it doesn't get too noisy)
+        const pathAlpha = viewMode === 'overlay' ? 0.6 : 1;
+        drawPath(verts, t.color, pathAlpha);
+        drawVertexDots(verts, t.color, pathAlpha, beatInCycle);
 
         // Walker position
         const pos = getPositionOnPath(verts, beatInCycle);
@@ -430,18 +463,48 @@
         drawWalker(pos, t.color, trails[t.id]);
 
         // Tala label
-        ctx.font = 'bold 13px system-ui';
-        ctx.fillStyle = t.color + 'cc';
-        ctx.textAlign = 'center';
-        ctx.fillText(t.name, px, py + radius + 24);
-        ctx.fillStyle = t.color + '88';
-        ctx.font = '11px system-ui';
-        ctx.fillText(`Beat ${Math.floor(beatInCycle) + 1} of ${t.beats}`, px, py + radius + 40);
-        ctx.textAlign = 'left';
+        if (viewMode === 'spread') {
+          ctx.font = 'bold 13px system-ui';
+          ctx.fillStyle = t.color + 'cc';
+          ctx.textAlign = 'center';
+          ctx.fillText(t.name, px, py + radius + 24);
+          ctx.fillStyle = t.color + '88';
+          ctx.font = '11px system-ui';
+          ctx.fillText(`Beat ${Math.floor(beatInCycle) + 1} of ${t.beats}`, px, py + radius + 40);
+          ctx.textAlign = 'left';
+        }
       });
 
-      // Convergence marker at center
-      if (convergenceGlow > 0.05 && count > 1) {
+      // In overlay mode, draw the shared sam point and labels to the side
+      if (viewMode === 'overlay') {
+        const samY = cy - baseRadius * (0.85);
+        // Sam marker dot
+        const samPulse = convergenceGlow > 0.05 ? 10 + convergenceGlow * 8 : 8;
+        ctx.beginPath();
+        ctx.arc(cx, samY, samPulse, 0, Math.PI * 2);
+        const samAlpha = convergenceGlow > 0.05 ? 0.9 : 0.5;
+        ctx.fillStyle = `rgba(255,220,120,${samAlpha})`;
+        ctx.fill();
+        ctx.font = 'bold 12px system-ui';
+        ctx.fillStyle = `rgba(255,220,120,0.8)`;
+        ctx.textAlign = 'center';
+        ctx.fillText('SAM', cx, samY - 16);
+        ctx.textAlign = 'left';
+
+        // Beat labels on the right side
+        active.forEach((t, i) => {
+          const beatInCycle = globalBeat % t.beats;
+          const labelY = cy + baseRadius + 30 + i * 20;
+          ctx.font = '12px system-ui';
+          ctx.fillStyle = t.color + 'cc';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${t.name}: Beat ${Math.floor(beatInCycle) + 1} of ${t.beats}`, cx, labelY);
+          ctx.textAlign = 'left';
+        });
+      }
+
+      // Convergence marker at center (spread mode) or at sam point (overlay mode)
+      if (convergenceGlow > 0.05 && count > 1 && viewMode === 'spread') {
         const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60 * convergenceGlow);
         g.addColorStop(0, `rgba(255,220,120,${convergenceGlow * 0.6})`);
         g.addColorStop(1, `rgba(255,220,120,0)`);
@@ -455,6 +518,20 @@
         ctx.textAlign = 'center';
         ctx.fillText('SAM', cx, cy + 4);
         ctx.textAlign = 'left';
+      }
+
+      // Overlay convergence: big flash at the shared sam vertex
+      if (convergenceGlow > 0.05 && count > 1 && viewMode === 'overlay') {
+        const samY = cy - baseRadius * 0.85;
+        const flashRadius = 40 + convergenceGlow * 40;
+        const g = ctx.createRadialGradient(cx, samY, 0, cx, samY, flashRadius);
+        g.addColorStop(0, `rgba(255,220,120,${convergenceGlow * 0.7})`);
+        g.addColorStop(0.5, `rgba(255,220,120,${convergenceGlow * 0.2})`);
+        g.addColorStop(1, `rgba(255,220,120,0)`);
+        ctx.beginPath();
+        ctx.arc(cx, samY, flashRadius, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
       }
 
       // Global beat counter
