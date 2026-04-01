@@ -48,6 +48,10 @@ This distinction is critical so that observers and participants can perceive bot
 - **Eka Tala** -- a tala consisting of a single clap + finger counts
 - **Suladi Sapta Tala** -- the system of seven tala structures, each of which can take any of the five jati-s
 
+## Live Demo
+
+**[View the interactive tala pathway demo](https://kylethomas-ramos.github.io/South-Indian-Music/demo/index.html)**
+
 ## Status
 
 **Work in progress.** Currently refining the embodiment design and preparing a small demo.
@@ -58,4 +62,5 @@ This distinction is critical so that observers and participants can perceive bot
 /                   # You are here
 README.md           # This file -- project overview and plan
 FEEDBACK.md         # Professor feedback and responses
+demo/index.html     # Interactive tala pathway visualization
 ```
