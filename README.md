@@ -12,15 +12,23 @@ Rhythmic time in South Indian music is best understood as **relational and spati
 
 ## Approach
 
-The project is grounded in the **suladi sapta tala system**, using **eka tala** structures across different **jati-s** (rhythmic families):
+The project is grounded in the **suladi sapta tala system**. This system consists of seven tala structures, each of which can take any of the five **jati-s** (rhythmic families: Tisra=3, Chatusra=4, Khanda=5, Misra=7, Sankirna=9). The jati determines the length of the **laghu** (l) component, while **drutam** (O, 2 beats) and **anudhrutam** (U, 1 beat) are fixed.
 
-| Jati | Eka Tala Structure | Beats |
-|------|-------------------|-------|
-| Chatusra | Clap + 3 finger counts | 4 |
-| Tisra | Clap + 2 finger counts | 3 |
-| Khanda | Clap + 4 finger counts | 5 |
-| Misra | Clap + 6 finger counts | 7 |
-| Sankirna | Clap + 8 finger counts | 9 |
+### Suladi Sapta Tala System
+
+| Tala | Anga Notation | Tisra | Chatusra | Khanda | Misra | Sankirna |
+|---------|---------------|-------|----------|--------|-------|----------|
+| Dhruva | l O l l | 11 | 14 | 17 | 23 | 29 |
+| Matya | l O l | 8 | 10 | 12 | 16 | 20 |
+| Rupaka | O l | 5 | 6 | 7 | 9 | 11 |
+| Jhampa | l U O | 6 | 7 | 8 | 10 | 12 |
+| Triputa | l O O | 7 | 8 | 9 | 11 | 13 |
+| Ata | l l O O | 10 | 12 | 14 | 18 | 22 |
+| Eka | l | 3 | 4 | 5 | 7 | 9 |
+
+**Key:** l = laghu (length set by jati), O = drutam (2 beats), U = anudhrutam (1 beat)
+
+The initial demo focuses on **eka tala** (a single laghu) across different jati-s, as these are the simplest cycles to visualize. The full system offers 35 combinations (7 talas x 5 jati-s) that could be explored as the project develops.
 
 Each pathway is designed to reflect the internal logic of its tala, with symmetrical and asymmetrical geometric forms corresponding to different cycle lengths.
 
@@ -42,11 +50,13 @@ This distinction is critical so that observers and participants can perceive bot
 
 ## Key Concepts
 
-- **Tala** -- rhythmic cycle defined by a pattern of claps and finger counts
-- **Jati** -- rhythmic family that determines the number of beats in a tala component (Chatusra=4, Tisra=3, Khanda=5, Misra=7, Sankirna=9)
+- **Tala** -- rhythmic cycle defined by a sequence of angas (components)
+- **Jati** -- rhythmic family that determines the length of the laghu (Tisra=3, Chatusra=4, Khanda=5, Misra=7, Sankirna=9)
+- **Laghu (l)** -- variable-length component: a clap + finger counts, length determined by jati
+- **Drutam (O)** -- fixed component of 2 beats (clap + wave)
+- **Anudhrutam (U)** -- fixed component of 1 beat (clap)
 - **Gati** -- note-rate or subdivision within a beat
-- **Eka Tala** -- a tala consisting of a single clap + finger counts
-- **Suladi Sapta Tala** -- the system of seven tala structures, each of which can take any of the five jati-s
+- **Suladi Sapta Tala** -- the system of seven tala structures (Dhruva, Matya, Rupaka, Jhampa, Triputa, Ata, Eka), each of which can take any of the five jati-s, yielding 35 total combinations
 
 ## Status
 
