@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syllable Match — Shaping Time</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .play-phrase-btn {
+      background: rgba(123,140,222,0.12); border: 1px solid var(--accent);
+      color: var(--accent2); padding: 10px 22px; border-radius: 8px;
+      font-size: 14px; cursor: pointer; transition: all 0.2s; margin: 12px 0;
+    }
+    .play-phrase-btn:hover { background: rgba(123,140,222,0.22); }
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
+    .mode-tab { padding: 7px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .mode-tab.active { background: rgba(123,140,222,0.12); border-color: var(--accent); color: var(--accent2); }
+    .results-screen { text-align: center; padding: 40px 0; display: none; }
+    .results-screen.show { display: block; }
+    .game-screen { }
+    .game-screen.hidden { display: none; }
+    .streak-bar { height: 4px; background: var(--border); border-radius: 2px; margin: 8px 0; overflow: hidden; }
+    .streak-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+    .q-phrase-display { font-family: 'Courier New', monospace; font-size: clamp(1.3rem,4vw,2rem); letter-spacing: 3px; color: var(--text); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; margin: 12px 0; }
+    .syl-lit { padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); }
+    .syl-lit.flash { background: rgba(123,140,222,0.3); border-color: var(--accent); transition: all 0.1s; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="nav-brand" href="../index.html">Shaping <span>Time</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../history.html">History</a></li>
+      <li><a href="../learn.html">Learn</a></li>
+      <li><a href="../demo/index.html">Explore</a></li>
+      <li><a href="../metronome.html">Metronome</a></li>
+      <li><a href="index.html" class="active">Games</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="game-wrap">
+      <div class="game-header">
+        <h1>Syllable Match</h1>
+        <p>A solkaṭṭu phrase appears. Identify which jāti (rhythmic family) it belongs to.</p>
+      </div>
+
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="read">Read Mode</button>
+        <button class="mode-tab" data-mode="listen">Listen Mode</button>
+        <button class="mode-tab" data-mode="reverse">Reverse Mode</button>
+      </div>
+
+      <div class="score-bar">
+        <div><div class="score-val" id="score">0</div><div class="score-label">Score</div></div>
+        <div><div class="score-val" id="streak">0</div><div class="score-label">Streak 🔥</div></div>
+        <div><div class="score-val" id="qnum">1/10</div><div class="score-label">Question</div></div>
+        <div><div class="score-val" id="correct-count">0</div><div class="score-label">Correct</div></div>
+      </div>
+      <div class="streak-bar"><div class="streak-fill" id="streak-fill" style="width:0%"></div></div>
+
+      <!-- Game screen -->
+      <div class="game-screen" id="game-screen">
+        <div class="q-card">
+          <div class="q-prompt" id="q-prompt">What jāti does this phrase represent?</div>
+          <div class="q-phrase-display" id="q-display"></div>
+          <button class="play-phrase-btn" id="play-btn">▶ Play phrase</button>
+        </div>
+        <div class="choices" id="choices"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+      </div>
+
+      <!-- Results screen -->
+      <div class="results-screen" id="results-screen">
+        <div style="font-size:48px;margin-bottom:16px;">🎵</div>
+        <h2 style="font-family:Georgia,serif;font-weight:normal;margin-bottom:8px;">Round complete!</h2>
+        <p style="color:var(--text-dim);margin-bottom:24px;" id="result-msg"></p>
+        <button class="btn btn-primary" onclick="startGame()">Play Again</button>
+        <a href="index.html" class="btn btn-outline" style="margin-left:10px;">Back to Games</a>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p><a href="index.html">← Games</a></p>
+    </footer>
+  </div>
+
+  <script>
+  const JATIS = [
+    { name: 'Tiśra',    id: 'tisra',    beats: 3, phrase: ['ta','ki','ṭa'],             color: '#5ec4c8', freq: 523 },
+    { name: 'Chatusra', id: 'chatusra', beats: 4, phrase: ['ta','ka','di','mi'],         color: '#c8a05e', freq: 659 },
+    { name: 'Khaṇḍa',  id: 'khanda',  beats: 5, phrase: ['ta','ka','ta','ki','ṭa'],    color: '#8e6cc8', freq: 784 },
+    { name: 'Miśra',   id: 'misra',   beats: 7, phrase: ['ta','ka','di','mi','ta','ki','ṭa'], color: '#c86c6c', freq: 988 },
+    { name: 'Saṅkīrṇa',id: 'sankirna',beats: 9, phrase: ['ta','ka','di','mi','ta','ka','ta','ki','ṭa'], color: '#6cc87b', freq: 1175 },
+  ];
+
+  // Alternate phrases for variety
+  const ALT_PHRASES = {
+    tisra:    [['ta','ki','ṭa'], ['ta','ka','•'], ['•','ta','ka']],
+    chatusra: [['ta','ka','di','mi'], ['ta','ka','jo','ṇu'], ['ta','ka','di','ku']],
+    khanda:   [['ta','ka','ta','ki','ṭa'], ['din','ta','ki','ṭa','•'], ['ta','din','tān','gu','•']],
+    misra:    [['ta','ka','di','mi','ta','ki','ṭa'], ['din','ta','ka','ta','ki','ṭa','•']],
+    sankirna: [['ta','ka','di','mi','ta','ka','ta','ki','ṭa']],
+  };
+
+  let audioCtx = null;
+  function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+
+  function playTone(freq, dur=0.09, vol=0.12) {
+    if(!audioCtx) return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    osc.start(); osc.stop(t+dur);
+  }
+
+  let mode = 'read';
+  let questions = [], qIdx = 0, score = 0, streak = 0, correctCount = 0;
+  let answered = false;
+
+  document.querySelectorAll('.mode-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      updatePrompt();
+    });
+  });
+
+  function updatePrompt() {
+    const prompts = {
+      read: 'Which jāti does this solkaṭṭu phrase represent?',
+      listen: 'Listen to the phrase, then identify the jāti.',
+      reverse: 'Select the correct solkaṭṭu phrase for this jāti:'
+    };
+    document.getElementById('q-prompt').textContent = prompts[mode];
+  }
+
+  function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+  function buildQuestions() {
+    const qs = [];
+    for (let i = 0; i < 10; i++) {
+      const jati = JATIS[i % JATIS.length];
+      const alts = ALT_PHRASES[jati.id] || [jati.phrase];
+      const phrase = alts[Math.floor(Math.random() * alts.length)];
+      qs.push({ jati, phrase });
+    }
+    return shuffle(qs);
+  }
+
+  function startGame() {
+    questions = buildQuestions();
+    qIdx = 0; score = 0; streak = 0; correctCount = 0;
+    document.getElementById('score').textContent = 0;
+    document.getElementById('streak').textContent = 0;
+    document.getElementById('correct-count').textContent = 0;
+    document.getElementById('streak-fill').style.width = '0%';
+    document.getElementById('results-screen').classList.remove('show');
+    document.getElementById('game-screen').classList.remove('hidden');
+    showQuestion();
+  }
+
+  function showQuestion() {
+    answered = false;
+    const q = questions[qIdx];
+    document.getElementById('qnum').textContent = `${qIdx+1}/10`;
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('next-btn').classList.remove('show');
+
+    const display = document.getElementById('q-display');
+    display.innerHTML = '';
+
+    if (mode === 'reverse') {
+      // Show the jati name, ask for the phrase
+      display.innerHTML = `<span style="font-size:1.5rem;font-weight:bold;color:${q.jati.color}">${q.jati.name} (${q.jati.beats} beats)</span>`;
+      buildReverseChoices(q);
+    } else {
+      // Show/hide phrase based on mode
+      if (mode === 'read') {
+        q.phrase.forEach(s => {
+          const span = document.createElement('span');
+          span.className = 'syl-lit';
+          span.textContent = s;
+          display.appendChild(span);
+        });
+      } else {
+        display.textContent = '?  ?  ?  ?';
+        display.style.color = 'var(--text-mute)';
+      }
+      buildJatiChoices(q);
+    }
+
+    document.getElementById('play-btn').style.display = mode === 'read' ? 'none' : 'inline-block';
+    if (mode === 'reverse') document.getElementById('play-btn').style.display = 'none';
+  }
+
+  function buildJatiChoices(q) {
+    const choices = document.getElementById('choices');
+    choices.innerHTML = '';
+    const options = shuffle(JATIS);
+    options.forEach(j => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = `<strong>${j.name}</strong><br><span style="font-size:12px;color:var(--text-mute)">${j.beats} beats · ${j.phrase.join(' ')}</span>`;
+      btn.style.borderLeftColor = j.color;
+      btn.addEventListener('click', () => checkAnswer(btn, j.id === q.jati.id, q));
+      choices.appendChild(btn);
+    });
+  }
+
+  function buildReverseChoices(q) {
+    const choices = document.getElementById('choices');
+    choices.innerHTML = '';
+    // Pick 4 jatis to show phrases from (including correct)
+    const others = shuffle(JATIS.filter(j => j.id !== q.jati.id)).slice(0,3);
+    const options = shuffle([q.jati, ...others]);
+    options.forEach(j => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = `<span style="font-family:monospace;font-size:1rem;">${j.phrase.join(' ')}</span>`;
+      btn.addEventListener('click', () => checkAnswer(btn, j.id === q.jati.id, q));
+      choices.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(btn, isCorrect, q) {
+    if (answered) return;
+    answered = true;
+    initAudio();
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      score += 10 + streak * 2;
+      streak++;
+      correctCount++;
+      showFeedback(true, `Correct! ${q.jati.name} = ${q.jati.beats}-beat cycle. ${q.phrase.join(' ')}`);
+      playTone(880, 0.15, 0.15);
+    } else {
+      btn.classList.add('wrong');
+      streak = 0;
+      showFeedback(false, `Not quite. This was ${q.jati.name} (${q.jati.beats} beats): ${q.phrase.join(' ')}`);
+      playTone(220, 0.2, 0.12);
+      // Highlight correct
+      document.querySelectorAll('.choice-btn').forEach(b => {
+        if (b.textContent.includes(q.jati.name) || (mode === 'reverse' && b.querySelector('span')?.textContent === q.jati.phrase.join(' ')))
+          b.classList.add('correct');
+      });
+    }
+
+    // If listen mode — reveal phrase
+    if (mode === 'listen') {
+      const display = document.getElementById('q-display');
+      display.innerHTML = '';
+      display.style.color = '';
+      q.phrase.forEach(s => {
+        const span = document.createElement('span'); span.className = 'syl-lit'; span.textContent = s;
+        display.appendChild(span);
+      });
+    }
+
+    document.getElementById('score').textContent = score;
+    document.getElementById('streak').textContent = streak;
+    document.getElementById('correct-count').textContent = correctCount;
+    document.getElementById('streak-fill').style.width = Math.min(100, streak * 10) + '%';
+    document.getElementById('next-btn').classList.add('show');
+  }
+
+  function showFeedback(correct, msg) {
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+    fb.textContent = (correct ? '✓ ' : '✗ ') + msg;
+  }
+
+  function nextQuestion() {
+    qIdx++;
+    if (qIdx >= questions.length) {
+      showResults(); return;
+    }
+    showQuestion();
+  }
+
+  function showResults() {
+    document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('results-screen').classList.add('show');
+    const pct = Math.round(correctCount / 10 * 100);
+    const msgs = ['Keep practicing! Review the Learn page.', 'Getting there! Try again to improve.', 'Good work!', 'Excellent!', 'Perfect score! You know your jātis!'];
+    const tier = Math.min(4, Math.floor(pct / 20));
+    document.getElementById('result-msg').textContent = `${correctCount}/10 correct (${pct}%) · Final score: ${score}. ${msgs[tier]}`;
+  }
+
+  // Play phrase button
+  document.getElementById('play-btn').addEventListener('click', () => {
+    initAudio();
+    const q = questions[qIdx];
+    q.phrase.forEach((s, i) => {
+      setTimeout(() => {
+        playTone(q.jati.freq * (1 + i * 0.02), 0.1, 0.14);
+        // Flash syllable display
+        const display = document.getElementById('q-display');
+        const syls = display.querySelectorAll('.syl-lit');
+        if (syls[i]) { syls[i].classList.add('flash'); setTimeout(() => syls[i].classList.remove('flash'), 150); }
+      }, i * 180);
+    });
+  });
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  startGame();
+  updatePrompt();
+  </script>
+</body>
+</html>

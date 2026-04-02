@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metronome — Shaping Time</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { overflow-x: hidden; }
+    .metro-page { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+    .metro-page h1 { font-family: Georgia,serif; font-size: clamp(1.6rem,4vw,2.4rem); font-weight: normal; margin-bottom: 8px; text-align: center; padding-top: 24px; }
+    .metro-page .sub { color: var(--text-dim); text-align: center; font-size: 0.95rem; margin-bottom: 40px; }
+    .tala-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
+    .tala-option {
+      padding: 14px 16px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: var(--surface); cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .tala-option:hover { background: var(--surface2); border-color: var(--border2); }
+    .tala-option.selected { border-color: var(--accent); background: rgba(123,140,222,0.08); }
+    .tala-option .to-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .tala-option .to-beats { font-size: 11px; color: var(--text-dim); }
+    .tala-option .to-dot { width: 8px; height: 8px; border-radius: 50%; margin-bottom: 4px; }
+    .metro-main { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px 24px; margin-bottom: 24px; }
+    .beat-ring { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; min-height: 72px; align-items: center; }
+    .metro-beat-big {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 2px;
+      font-size: 11px; font-weight: 600;
+      border: 2px solid var(--border2);
+      color: var(--text-mute);
+      transition: all 0.08s;
+      cursor: default; position: relative;
+    }
+    .metro-beat-big .b-num { font-size: 15px; font-weight: bold; }
+    .metro-beat-big .b-type { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metro-beat-big.is-sam { border-color: var(--gold); color: var(--gold); }
+    .metro-beat-big.is-wave { border-color: var(--accent); }
+    .metro-beat-big.is-finger { border-color: rgba(94,196,200,0.4); }
+    .metro-beat-big.active {
+      transform: scale(1.2);
+      color: #fff;
+    }
+    .metro-beat-big.active.is-sam { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 28px rgba(200,160,94,0.6); }
+    .metro-beat-big.active:not(.is-sam) { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 20px rgba(123,140,222,0.4); }
+    .metro-beat-big.active.is-wave:not(.is-sam) { background: #5a70c8; border-color: #5a70c8; }
+    .bpm-section { text-align: center; margin-bottom: 24px; }
+    .bpm-big { font-family: Georgia,serif; font-size: 4rem; line-height: 1; color: var(--text); letter-spacing: -2px; }
+    .bpm-big span { font-size: 1.2rem; color: var(--text-dim); }
+    .bpm-row { display: flex; align-items: center; gap: 12px; justify-content: center; margin-top: 10px; }
+    .bpm-row input[type=range] { width: 220px; accent-color: var(--accent); }
+    .bpm-tap { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.15s; }
+    .bpm-tap:hover { background: var(--surface); }
+    .bpm-tap:active { background: rgba(123,140,222,0.2); border-color: var(--accent); transform: scale(0.97); }
+    .play-row { display: flex; gap: 14px; align-items: center; justify-content: center; }
+    .cycle-counter { font-size: 13px; color: var(--text-dim); text-align: center; margin-top: 14px; }
+    .anga-legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 24px; font-size: 12px; color: var(--text-dim); }
+    .anga-legend-item { display: flex; align-items: center; gap: 5px; }
+    .anga-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .sound-toggle { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+    .stoggle { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); cursor: pointer; }
+    .stoggle input { accent-color: var(--accent); }
+    @media (max-width:480px) { .tala-selector { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="nav-brand" href="index.html">Shaping <span>Time</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="history.html">History</a></li>
+      <li><a href="learn.html">Learn</a></li>
+      <li><a href="demo/index.html">Explore</a></li>
+      <li><a href="metronome.html" class="active">Metronome</a></li>
+      <li><a href="games/index.html">Games</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="metro-page">
+      <h1>Karnatak Metronome</h1>
+      <p class="sub">A tāḷa-aware metronome that counts cycles the Karnatak way — distinct sounds for sam, claps, waves, and finger counts.</p>
+
+      <!-- Tala Selector -->
+      <div class="tala-selector" id="tala-selector"></div>
+
+      <!-- Main metronome -->
+      <div class="metro-main">
+        <div class="bpm-section">
+          <div class="bpm-big" id="bpm-display">72 <span>BPM</span></div>
+          <div class="bpm-row">
+            <input type="range" id="bpm-slider" min="20" max="240" value="72">
+            <button class="bpm-tap" id="tap-btn">Tap</button>
+          </div>
+        </div>
+
+        <div class="beat-ring" id="beat-ring"></div>
+
+        <div class="play-row">
+          <button class="metro-btn-play" id="play-btn">▶</button>
+        </div>
+        <div class="cycle-counter" id="cycle-counter">Cycle — · Beat —</div>
+
+        <div class="anga-legend">
+          <div class="anga-legend-item"><div class="anga-dot" style="background:var(--gold)"></div> Sam (beat 1)</div>
+          <div class="anga-legend-item"><div class="anga-dot" style="background:#fff;opacity:0.4"></div> Clap</div>
+          <div class="anga-legend-item"><div class="anga-dot" style="background:var(--accent)"></div> Wave</div>
+          <div class="anga-legend-item"><div class="anga-dot" style="background:var(--tisra)"></div> Finger count</div>
+        </div>
+      </div>
+
+      <!-- Sound toggles -->
+      <div class="sound-toggle">
+        <label class="stoggle"><input type="checkbox" id="snd-sam" checked> Sam clap</label>
+        <label class="stoggle"><input type="checkbox" id="snd-beat" checked> Beat click</label>
+        <label class="stoggle"><input type="checkbox" id="snd-finger"> Finger tones</label>
+        <label class="stoggle"><input type="checkbox" id="snd-sub"> Subdivisions (pulses)</label>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>Tāḷa structures from David P. Nelson's <em>Solkaṭṭu Manual</em> (2008).</p>
+    </footer>
+  </div>
+
+  <script>
+  // ==================== TALA DATA ====================
+  // gesture types: sam, clap, wave, pinky, ring, middle, index, thumb
+  const TALAS = [
+    { id:'adi',    name:'Ādi Tāḷa',             beats:8, color:'#7b8cde',
+      gestures:['sam','pinky','ring','middle','clap','wave','clap','wave'],
+      desc:'8 beats · most common' },
+    { id:'rupaka', name:'Rūpaka',                beats:3, color:'#5ec4c8',
+      gestures:['sam','clap','wave'],
+      desc:'3 beats · drutam + laghu' },
+    { id:'misracapu', name:'Miśra Cāpu',         beats:7, color:'#c86c6c',
+      gestures:['sam','clap','clap','clap','clap','clap','clap'],
+      desc:'7 beats · capu tāḷa' },
+    { id:'khandacapu', name:'Khaṇḍa Cāpu',       beats:5, color:'#8e6cc8',
+      gestures:['sam','clap','clap','clap','clap'],
+      desc:'5 beats · capu tāḷa' },
+    { id:'tisra',  name:'Tiśra Jāti Ēka',        beats:3, color:'#5ec4c8',
+      gestures:['sam','pinky','ring'],
+      desc:'3 beats · laghu only' },
+    { id:'chatusra',name:'Chatusra Jāti Ēka',    beats:4, color:'#c8a05e',
+      gestures:['sam','pinky','ring','middle'],
+      desc:'4 beats · laghu only' },
+    { id:'khanda', name:'Khaṇḍa Jāti Ēka',       beats:5, color:'#8e6cc8',
+      gestures:['sam','pinky','ring','middle','index'],
+      desc:'5 beats · laghu only' },
+    { id:'misra',  name:'Miśra Jāti Ēka',        beats:7, color:'#c86c6c',
+      gestures:['sam','pinky','ring','middle','index','thumb','pinky'],
+      desc:'7 beats · laghu only' },
+  ];
+
+  // ==================== UI BUILD ====================
+  let selectedTala = TALAS[0];
+  const selectorEl = document.getElementById('tala-selector');
+  TALAS.forEach(t => {
+    const btn = document.createElement('div');
+    btn.className = 'tala-option' + (t === selectedTala ? ' selected' : '');
+    btn.innerHTML = `<div class="to-dot" style="background:${t.color}"></div><div class="to-name">${t.name}</div><div class="to-beats">${t.desc}</div>`;
+    btn.addEventListener('click', () => {
+      selectedTala = t;
+      document.querySelectorAll('.tala-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      if (playing) stopMetro();
+      buildBeatRing();
+    });
+    selectorEl.appendChild(btn);
+  });
+
+  function buildBeatRing() {
+    const ring = document.getElementById('beat-ring');
+    ring.innerHTML = '';
+    selectedTala.gestures.forEach((g, i) => {
+      const b = document.createElement('div');
+      b.className = 'metro-beat-big' + (i===0?' is-sam': g==='wave'?' is-wave': (g!=='clap'&&g!=='sam')?' is-finger':'');
+      b.id = `mbeat${i}`;
+      const label = { sam:'Sam', clap:'Clap', wave:'Wave', pinky:'Pinky', ring:'Ring', middle:'Mid', index:'Index', thumb:'Thumb' }[g] || g;
+      b.innerHTML = `<div class="b-num">${i+1}</div><div class="b-type">${label}</div>`;
+      ring.appendChild(b);
+    });
+  }
+  buildBeatRing();
+
+  // ==================== AUDIO ====================
+  let audioCtx = null;
+  function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+
+  function playSound(type, isSam) {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+
+    if (isSam) {
+      // Noise burst for sam
+      const bufSz = Math.floor(audioCtx.sampleRate * 0.12);
+      const buf = audioCtx.createBuffer(1, bufSz, audioCtx.sampleRate);
+      const d = buf.getChannelData(0);
+      for(let i=0;i<bufSz;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/bufSz,2);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      const bp = audioCtx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1100; bp.Q.value=0.8;
+      const g2 = audioCtx.createGain(); g2.gain.setValueAtTime(document.getElementById('snd-sam').checked?0.6:0, t);
+      g2.gain.exponentialRampToValueAtTime(0.001, t+0.12);
+      src.connect(bp); bp.connect(g2); g2.connect(audioCtx.destination);
+      src.start(); return;
+    }
+
+    const freqMap = { clap:480, wave:300, sam:700, pinky:600, ring:660, middle:720, index:800, thumb:880 };
+    const volMap  = { clap:0.1, wave:0.07, pinky:0.07, ring:0.07, middle:0.07, index:0.07, thumb:0.07 };
+    const durMap  = { wave:0.15 };
+
+    if (type !== 'clap' && type !== 'wave' && !document.getElementById('snd-finger').checked) {
+      // Finger tones off — play soft click instead
+      if (!document.getElementById('snd-beat').checked) return;
+      osc.frequency.value = 440; osc.type = 'triangle';
+      gain.gain.setValueAtTime(0.05, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t+0.04);
+      osc.start(); osc.stop(t+0.04); return;
+    }
+    if (!document.getElementById('snd-beat').checked && !document.getElementById('snd-finger').checked) return;
+
+    osc.frequency.value = freqMap[type] || 500;
+    osc.type = type === 'wave' ? 'sine' : 'triangle';
+    const vol = volMap[type] || 0.07;
+    const dur = durMap[type] || 0.05;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t+dur);
+    osc.start(); osc.stop(t+dur);
+  }
+
+  // Subdivision tick
+  function playSubTick() {
+    if (!audioCtx || !document.getElementById('snd-sub').checked) return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.frequency.value = 900; osc.type = 'sine';
+    g.gain.setValueAtTime(0.025, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t+0.025);
+    osc.start(); osc.stop(t+0.025);
+  }
+
+  // ==================== METRONOME ====================
+  let playing = false, currentBeat = -1, cycleCount = 0, nextBeatTime = 0;
+  let schedulerTimer = null;
+  const LOOKAHEAD = 0.1; // seconds
+  const SCHEDULE_INTERVAL = 25; // ms
+
+  function getBeatDuration() { return 60 / parseInt(document.getElementById('bpm-slider').value); }
+
+  function scheduleBeats() {
+    if (!playing) return;
+    const now = audioCtx.currentTime;
+    while (nextBeatTime < now + LOOKAHEAD) {
+      scheduleBeat(nextBeatTime);
+      nextBeatTime += getBeatDuration();
+    }
+    schedulerTimer = setTimeout(scheduleBeats, SCHEDULE_INTERVAL);
+  }
+
+  function scheduleBeat(time) {
+    const beat = (currentBeat + 1) % selectedTala.beats;
+    currentBeat = beat;
+    const g = selectedTala.gestures[beat];
+    const isSam = beat === 0;
+
+    // Schedule audio
+    if (isSam && document.getElementById('snd-sam').checked) {
+      // schedule noise via slight delay (Web Audio hack)
+      const delay = Math.max(0, time - audioCtx.currentTime);
+      setTimeout(() => playSound(g, true), delay * 1000);
+    } else {
+      const delay = Math.max(0, time - audioCtx.currentTime);
+      setTimeout(() => playSound(g, false), delay * 1000);
+    }
+
+    // Subdivisions (4 per beat)
+    if (document.getElementById('snd-sub').checked) {
+      for (let s = 1; s <= 3; s++) {
+        const subTime = time + s * getBeatDuration() / 4;
+        const delayS = Math.max(0, subTime - audioCtx.currentTime);
+        setTimeout(playSubTick, delayS * 1000);
+      }
+    }
+
+    // UI update
+    const delay = Math.max(0, time - audioCtx.currentTime);
+    setTimeout(() => {
+      if (!playing) return;
+      document.querySelectorAll('.metro-beat-big').forEach((b,i) => b.classList.toggle('active', i===beat));
+      if (beat === 0) cycleCount++;
+      document.getElementById('cycle-counter').textContent = `Cycle ${cycleCount} · Beat ${beat+1} of ${selectedTala.beats}`;
+    }, delay * 1000);
+  }
+
+  function startMetro() {
+    initAudio();
+    playing = true;
+    currentBeat = -1;
+    cycleCount = 0;
+    nextBeatTime = audioCtx.currentTime + 0.05;
+    document.getElementById('play-btn').textContent = '■';
+    scheduleBeats();
+  }
+
+  function stopMetro() {
+    playing = false;
+    clearTimeout(schedulerTimer);
+    document.getElementById('play-btn').textContent = '▶';
+    document.querySelectorAll('.metro-beat-big').forEach(b => b.classList.remove('active'));
+    document.getElementById('cycle-counter').textContent = 'Cycle — · Beat —';
+    currentBeat = -1;
+    cycleCount = 0;
+  }
+
+  document.getElementById('play-btn').addEventListener('click', () => {
+    playing ? stopMetro() : startMetro();
+  });
+
+  // BPM slider
+  const bpmSlider = document.getElementById('bpm-slider');
+  bpmSlider.addEventListener('input', () => {
+    document.getElementById('bpm-display').innerHTML = `${bpmSlider.value} <span>BPM</span>`;
+  });
+
+  // Tap tempo
+  let tapTimes = [];
+  document.getElementById('tap-btn').addEventListener('click', () => {
+    const now = Date.now();
+    tapTimes.push(now);
+    tapTimes = tapTimes.filter(t => now - t < 3000);
+    if (tapTimes.length >= 2) {
+      const diffs = tapTimes.slice(1).map((t,i) => t - tapTimes[i]);
+      const avg = diffs.reduce((a,b) => a+b,0) / diffs.length;
+      const bpm = Math.round(60000 / avg);
+      const clamped = Math.max(20, Math.min(240, bpm));
+      bpmSlider.value = clamped;
+      document.getElementById('bpm-display').innerHTML = `${clamped} <span>BPM</span>`;
+    }
+  });
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  </script>
+</body>
+</html>

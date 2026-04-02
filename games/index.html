@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games — Shaping Time</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .games-hero { background: linear-gradient(to bottom, rgba(142,108,200,0.08), transparent); border-bottom: 1px solid var(--border); padding: 48px 24px 40px; text-align: center; }
+    .games-hero h1 { font-family: Georgia,serif; font-size: clamp(1.8rem,4vw,2.6rem); font-weight: normal; margin-bottom: 10px; }
+    .games-hero p { color: var(--text-dim); max-width: 520px; margin: 0 auto; }
+    .games-wrap { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+    .game-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 32px; display: flex; gap: 28px; align-items: flex-start;
+      text-decoration: none; color: inherit; transition: all 0.2s; margin-bottom: 20px;
+    }
+    .game-card:hover { background: var(--surface2); border-color: var(--border2); transform: translateX(4px); }
+    .game-icon { font-size: 40px; flex-shrink: 0; line-height: 1; }
+    .game-info { flex: 1; }
+    .game-title { font-family: Georgia,serif; font-size: 1.3rem; font-weight: normal; color: var(--text); margin-bottom: 6px; }
+    .game-desc { font-size: 14px; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px; }
+    .game-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .game-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+    .game-arrow { color: var(--accent); font-size: 20px; align-self: center; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="nav-brand" href="../index.html">Shaping <span>Time</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../history.html">History</a></li>
+      <li><a href="../learn.html">Learn</a></li>
+      <li><a href="../demo/index.html">Explore</a></li>
+      <li><a href="../metronome.html">Metronome</a></li>
+      <li><a href="index.html" class="active">Games</a></li>
+    </ul>
+  </nav>
+  <div class="page-wrap">
+    <div class="games-hero">
+      <h1>Games</h1>
+      <p>Put your knowledge to the test with four interactive games rooted in Karnatak rhythmic theory.</p>
+    </div>
+    <div class="games-wrap">
+
+      <a class="game-card" href="syllable-match.html">
+        <div class="game-icon">🎧</div>
+        <div class="game-info">
+          <div class="game-title">Syllable Match</div>
+          <div class="game-desc">A solkaṭṭu phrase appears — can you identify which jāti it belongs to? Tests whether you've internalized the characteristic phrase shapes of tiśra, chatusra, khaṇḍa, miśra, and saṅkīrṇa.</div>
+          <div class="game-tags"><span class="game-tag">Identification</span><span class="game-tag">Beginner-friendly</span><span class="game-tag">Score system</span></div>
+        </div>
+        <div class="game-arrow">›</div>
+      </a>
+
+      <a class="game-card" href="mora-builder.html">
+        <div class="game-icon">🧩</div>
+        <div class="game-info">
+          <div class="game-title">Mōrā Builder</div>
+          <div class="game-desc">Given a phrase and a tāḷa, calculate the correct gap length so that the mōrā form — (statement)[gap](statement)[gap](statement) — fills an exact number of cycles and lands on sam. A math puzzle wrapped in rhythm.</div>
+          <div class="game-tags"><span class="game-tag">Puzzle</span><span class="game-tag">Intermediate</span><span class="game-tag">Mōrā form</span></div>
+        </div>
+        <div class="game-arrow">›</div>
+      </a>
+
+      <a class="game-card" href="gopucca.html">
+        <div class="game-icon">🔍</div>
+        <div class="game-info">
+          <div class="game-title">Gopucca Puzzle</div>
+          <div class="game-desc">A mōrā plays with statements that shrink at each repetition — the gopucca (cow-tail) shape. Your task: identify the original phrase and the gap value from the pattern you observe.</div>
+          <div class="game-tags"><span class="game-tag">Puzzle</span><span class="game-tag">Advanced</span><span class="game-tag">Mōrā shapes</span></div>
+        </div>
+        <div class="game-arrow">›</div>
+      </a>
+
+      <a class="game-card" href="../learn.html#gestures">
+        <div class="game-icon">🤲</div>
+        <div class="game-info">
+          <div class="game-title">Hand Gesture Guide</div>
+          <div class="game-desc">An interactive animated guide to every tāḷa's hand gesture sequence — claps, waves, and finger counts. Follow along in real time. Found on the Learn page.</div>
+          <div class="game-tags"><span class="game-tag">Interactive guide</span><span class="game-tag">All levels</span><span class="game-tag">Audio</span></div>
+        </div>
+        <div class="game-arrow">›</div>
+      </a>
+
+    </div>
+    <footer class="site-footer">
+      <p>Game content based on David P. Nelson's <em>Solkaṭṭu Manual</em> (2008).</p>
+    </footer>
+  </div>
+</body>
+</html>

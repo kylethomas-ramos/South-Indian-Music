@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn — Shaping Time</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .learn-hero { background: linear-gradient(to bottom, rgba(94,196,200,0.07), transparent); border-bottom: 1px solid var(--border); padding: 48px 24px 40px; text-align: center; }
+    .learn-hero h1 { font-family: Georgia,serif; font-size: clamp(1.8rem,4vw,2.6rem); font-weight: normal; margin-bottom: 10px; }
+    .learn-hero p { color: var(--text-dim); max-width: 520px; margin: 0 auto; }
+    .learn-wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+    .module { margin-bottom: 64px; }
+    .module-title { font-family: Georgia,serif; font-size: 1.5rem; font-weight: normal; color: var(--text); margin-bottom: 8px; }
+    .module-desc { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 28px; }
+    /* Syllable rows */
+    .jati-row { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+    .jati-label { font-size: 13px; color: var(--text-dim); width: 130px; flex-shrink: 0; }
+    .jati-label strong { display: block; font-size: 15px; color: var(--text); }
+    .jati-label em { font-style: normal; font-size: 11px; color: var(--text-mute); }
+    /* Trikala section */
+    .trikala-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 28px; }
+    .trikala-speeds { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+    .speed-card { flex: 1; min-width: 160px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+    .speed-card .speed-num { font-size: 28px; font-weight: bold; color: var(--accent); margin-bottom: 4px; }
+    .speed-card .speed-name { font-size: 12px; color: var(--text-dim); }
+    .speed-card .speed-syl { font-family: monospace; font-size: 13px; color: var(--text-dim); margin-top: 8px; }
+    .speed-card.playing { border-color: var(--accent); background: rgba(123,140,222,0.08); }
+    /* Hand gesture */
+    .gesture-section { }
+    .tala-gesture-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+    .tgc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .tgc-title { font-family: Georgia,serif; font-size: 1.05rem; color: var(--text); }
+    .tgc-sub { font-size: 12px; color: var(--text-dim); }
+    .beat-sequence { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .beat-pip {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; transition: transform 0.15s;
+    }
+    .beat-pip:hover { transform: scale(1.08); }
+    .beat-pip .pip-shape {
+      width: 44px; height: 44px; border-radius: 50%; border: 2px solid;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; transition: all 0.1s;
+    }
+    .beat-pip.current .pip-shape { transform: scale(1.2); filter: brightness(1.4); box-shadow: 0 0 14px currentColor; }
+    .beat-pip .pip-num { font-size: 10px; color: var(--text-mute); }
+    .beat-pip .pip-type { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .pip-clap  { border-color: rgba(255,255,255,0.35); color: var(--text); background: rgba(255,255,255,0.06); }
+    .pip-wave  { border-color: rgba(123,140,222,0.5); color: var(--accent); background: rgba(123,140,222,0.08); }
+    .pip-pinky { border-color: rgba(94,196,200,0.5); color: var(--tisra); background: rgba(94,196,200,0.08); }
+    .pip-ring  { border-color: rgba(200,160,94,0.5); color: var(--gold); background: rgba(200,160,94,0.08); }
+    .pip-middle{ border-color: rgba(142,108,200,0.5); color: var(--khanda); background: rgba(142,108,200,0.08); }
+    .pip-index { border-color: rgba(200,108,108,0.5); color: var(--misra); background: rgba(200,108,108,0.08); }
+    .pip-thumb { border-color: rgba(108,200,123,0.5); color: var(--sankirna); background: rgba(108,200,123,0.08); }
+    .gesture-controls { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .gesture-bpm { font-family: monospace; font-size: 14px; color: var(--text-dim); }
+    /* Legend */
+    .gesture-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    /* Play indicator */
+    .play-indicator { width: 12px; height: 12px; border-radius: 50%; background: var(--sankirna); box-shadow: 0 0 8px var(--sankirna); display: none; }
+    .play-indicator.on { display: inline-block; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="nav-brand" href="index.html">Shaping <span>Time</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="history.html">History</a></li>
+      <li><a href="learn.html" class="active">Learn</a></li>
+      <li><a href="demo/index.html">Explore</a></li>
+      <li><a href="metronome.html">Metronome</a></li>
+      <li><a href="games/index.html">Games</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="learn-hero">
+      <h1>Learn the Basics</h1>
+      <p>Master the core vocabulary of South Indian rhythm — syllables, speeds, and hand gestures — through interactive exploration.</p>
+    </div>
+
+    <div class="learn-wrap">
+
+      <!-- MODULE 1: SYLLABLES -->
+      <div class="module">
+        <div class="module-title">Solkaṭṭu Syllables</div>
+        <div class="module-desc">Each rhythmic family (jāti) has a characteristic spoken phrase whose syllable count matches the cycle length. Click any syllable to hear it.</div>
+
+        <div class="jati-row">
+          <div class="jati-label"><strong>Tiśra</strong> <em>3 beats</em></div>
+          <div class="syllable-row" data-jati="tisra" data-phrase="ta,ki,ṭa"></div>
+        </div>
+        <div class="jati-row">
+          <div class="jati-label"><strong>Chatusra</strong> <em>4 beats</em></div>
+          <div class="syllable-row" data-jati="chatusra" data-phrase="ta,ka,di,mi"></div>
+        </div>
+        <div class="jati-row">
+          <div class="jati-label"><strong>Khaṇḍa</strong> <em>5 beats</em></div>
+          <div class="syllable-row" data-jati="khanda" data-phrase="ta,ka,ta,ki,ṭa"></div>
+        </div>
+        <div class="jati-row">
+          <div class="jati-label"><strong>Miśra</strong> <em>7 beats</em></div>
+          <div class="syllable-row" data-jati="misra" data-phrase="ta,ka,di,mi,ta,ki,ṭa"></div>
+        </div>
+        <div class="jati-row">
+          <div class="jati-label"><strong>Saṅkīrṇa</strong> <em>9 beats</em></div>
+          <div class="syllable-row" data-jati="sankirna" data-phrase="ta,ka,di,mi,ta,ka,ta,ki,ṭa"></div>
+        </div>
+
+        <p style="font-size:13px; color:var(--text-mute); margin-top:16px;">Click any syllable to hear a synthesized tone. Click a full row to play the entire phrase.</p>
+      </div>
+
+      <hr class="divider">
+
+      <!-- MODULE 2: TRIKALA -->
+      <div class="module">
+        <div class="module-title">Trikāla — Three Speeds</div>
+        <div class="module-desc">The most fundamental process in Karnatak rhythm: a phrase is spoken at normal speed, then doubled, then doubled again — all while the tāḷa stays constant. Try it with <em>ta ki ṭa</em> in tiśra jāti ēka tāḷa (3 beats).</div>
+
+        <div class="trikala-box">
+          <div class="trikala-speeds">
+            <div class="speed-card" id="sc1">
+              <div class="speed-num">1×</div>
+              <div class="speed-name">First Speed</div>
+              <div class="speed-syl">ta — — ki — — ṭa — —</div>
+              <div style="font-size:11px;color:var(--text-mute);margin-top:6px;">1 syllable per beat</div>
+            </div>
+            <div class="speed-card" id="sc2">
+              <div class="speed-num">2×</div>
+              <div class="speed-name">Second Speed</div>
+              <div class="speed-syl">ta — ki — ṭa —</div>
+              <div style="font-size:11px;color:var(--text-mute);margin-top:6px;">2 syllables per beat</div>
+            </div>
+            <div class="speed-card" id="sc3">
+              <div class="speed-num">4×</div>
+              <div class="speed-name">Third Speed</div>
+              <div class="speed-syl">ta ki ṭa ta ki ṭa ta ki ṭa ta ki ṭa</div>
+              <div style="font-size:11px;color:var(--text-mute);margin-top:6px;">4 syllables per beat</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="trikala-play">▶ Play Trikāla</button>
+            <span id="trikala-status" style="font-size:13px;color:var(--text-dim);">Click play to hear all three speeds in sequence</span>
+            <span class="play-indicator" id="tri-indicator"></span>
+          </div>
+          <div style="margin-top:20px; padding:16px; background:var(--bg); border-radius:8px; font-size:13px; color:var(--text-dim); line-height:1.7;">
+            <strong style="color:var(--text);">Why trikāla matters:</strong> The slowest speed reveals the tāḷa structure — one syllable per beat. The fastest reveals the internal pulse — four subdivisions per beat. This doubling process appears at every level of Karnatak music, from individual exercises to entire concert structures.
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- MODULE 3: HAND GESTURES -->
+      <div class="module">
+        <div class="module-title">Hand Gesture Guide</div>
+        <div class="module-desc">Every tāḷa is counted with a specific sequence of hand gestures — claps (taṭṭu), waves (viccu), and finger counts. Press Play on any tāḷa to see the gestures animate in real time.</div>
+
+        <div class="gesture-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#fff; opacity:0.4;"></div> Clap (taṭṭu)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div> Wave (viccu)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--tisra);"></div> Pinky</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--gold);"></div> Ring finger</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--khanda);"></div> Middle finger</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--misra);"></div> Index finger</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--sankirna);"></div> Thumb</div>
+        </div>
+
+        <div style="height:20px;"></div>
+
+        <!-- Tala cards will be injected here -->
+        <div id="gesture-cards"></div>
+      </div>
+
+    </div>
+
+    <footer class="site-footer">
+      <p>Content drawn from David P. Nelson's <em>Solkaṭṭu Manual</em> (2008).</p>
+    </footer>
+  </div>
+
+  <script>
+  // ===================== AUDIO =====================
+  let audioCtx = null;
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  const JATI_FREQS = { tisra: 523, chatusra: 659, khanda: 784, misra: 988, sankirna: 1175 };
+
+  function playTone(freq, dur = 0.08, vol = 0.12) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    osc.start(); osc.stop(audioCtx.currentTime + dur);
+  }
+
+  function playClick(freq = 600, loud = false) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'triangle';
+    gain.gain.setValueAtTime(loud ? 0.18 : 0.07, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+  }
+
+  // ===================== SYLLABLE ROWS =====================
+  document.querySelectorAll('.syllable-row').forEach(row => {
+    const jati = row.dataset.jati;
+    const syllables = row.dataset.phrase.split(',');
+    const freq = JATI_FREQS[jati] || 600;
+
+    syllables.forEach((s, i) => {
+      const btn = document.createElement('button');
+      btn.className = `syl syl-${jati}`;
+      btn.textContent = s;
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        initAudio();
+        playTone(freq * (1 + i * 0.03), 0.1, 0.14);
+        btn.classList.add('active');
+        setTimeout(() => btn.classList.remove('active'), 200);
+      });
+      row.appendChild(btn);
+    });
+
+    // Click row label to play whole phrase
+    const label = row.closest('.jati-row')?.querySelector('.jati-label');
+    if (label) {
+      label.style.cursor = 'pointer';
+      label.title = 'Click to play phrase';
+      label.addEventListener('click', () => {
+        initAudio();
+        const btns = row.querySelectorAll('.syl');
+        btns.forEach((b, i) => {
+          setTimeout(() => {
+            playTone(freq * (1 + i * 0.03), 0.1, 0.14);
+            b.classList.add('active');
+            setTimeout(() => b.classList.remove('active'), 180);
+          }, i * 200);
+        });
+      });
+    }
+  });
+
+  // ===================== TRIKALA =====================
+  let triPlaying = false, triTimeout = null;
+  const triBtn = document.getElementById('trikala-play');
+  const triStatus = document.getElementById('trikala-status');
+  const triIndicator = document.getElementById('tri-indicator');
+
+  const SPEEDS = [
+    { card: 'sc1', label: 'Speed 1: one syllable per beat', bpm_mult: 1 },
+    { card: 'sc2', label: 'Speed 2: two syllables per beat', bpm_mult: 2 },
+    { card: 'sc3', label: 'Speed 3: four syllables per beat', bpm_mult: 4 },
+  ];
+
+  function playTrikala() {
+    if (triPlaying) {
+      triPlaying = false;
+      clearTimeout(triTimeout);
+      triBtn.textContent = '▶ Play Trikāla';
+      triStatus.textContent = 'Stopped.';
+      triIndicator.classList.remove('on');
+      document.querySelectorAll('.speed-card').forEach(c => c.classList.remove('playing'));
+      return;
+    }
+    initAudio();
+    triPlaying = true;
+    triBtn.textContent = '■ Stop';
+    triIndicator.classList.add('on');
+
+    const baseBpm = 72;
+    const repsPerSpeed = 4; // cycles per speed
+    const baseIntervalMs = 60000 / baseBpm;
+
+    let steps = [];
+    // Build step sequence: 3 speeds × 4 cycles × 3 beats × (1,2,4) syllables
+    [1, 2, 4].forEach(mult => {
+      for (let cycle = 0; cycle < repsPerSpeed; cycle++) {
+        for (let beat = 0; beat < 3; beat++) {
+          for (let sub = 0; sub < mult; sub++) {
+            steps.push({ mult, beat, sub });
+          }
+        }
+      }
+    });
+
+    let i = 0;
+    let currentMult = 0;
+    const intervalMs = baseIntervalMs / 4; // 16th-note grid
+
+    function tick() {
+      if (!triPlaying || i >= steps.length) {
+        triPlaying = false;
+        triBtn.textContent = '▶ Play Trikāla';
+        triStatus.textContent = 'Done! Try it yourself.';
+        triIndicator.classList.remove('on');
+        document.querySelectorAll('.speed-card').forEach(c => c.classList.remove('playing'));
+        return;
+      }
+      const step = steps[i];
+      const cardId = ['sc1','sc2','sc3'][[1,2,4].indexOf(step.mult)];
+      if (step.mult !== currentMult) {
+        document.querySelectorAll('.speed-card').forEach(c => c.classList.remove('playing'));
+        document.getElementById(cardId).classList.add('playing');
+        const labels = ['Speed 1: one syllable per beat','Speed 2: two syllables per beat','Speed 3: four syllables per beat'];
+        triStatus.textContent = labels[[1,2,4].indexOf(step.mult)];
+        currentMult = step.mult;
+      }
+      // Play tone on syllable onsets
+      const pulsesPerSyl = 4 / step.mult;
+      if (step.sub % pulsesPerSyl === 0) {
+        playTone(523, 0.07, step.beat === 0 && step.sub === 0 ? 0.18 : 0.10);
+      }
+      i++;
+      triTimeout = setTimeout(tick, intervalMs);
+    }
+    tick();
+  }
+
+  triBtn.addEventListener('click', playTrikala);
+
+  // ===================== HAND GESTURES =====================
+  const TALAS = [
+    {
+      name: 'Tiśra Jāti Ēka Tāḷa', beats: 3, color: '#5ec4c8',
+      gestures: ['clap','pinky','ring'],
+      angaLabels: ['1','2','3'],
+      desc: 'The shortest cycle — a single laghu of 3 beats. Counted: clap, pinky, ring.'
+    },
+    {
+      name: 'Chatusra Jāti Ēka Tāḷa', beats: 4, color: '#c8a05e',
+      gestures: ['clap','pinky','ring','middle'],
+      angaLabels: ['1','2','3','4'],
+      desc: '4-beat laghu. Clap, pinky, ring, middle.'
+    },
+    {
+      name: 'Ādi Tāḷa', beats: 8, color: '#7b8cde',
+      gestures: ['clap','pinky','ring','middle','clap','wave','clap','wave'],
+      angaLabels: ['1','2','3','4','5','6','7','8'],
+      desc: 'The most common tāḷa (80% of songs). 4-beat laghu + two drutams. Clap, pinky, ring, middle | clap, wave | clap, wave.'
+    },
+    {
+      name: 'Rūpaka Tāḷa', beats: 3, color: '#5ec4c8',
+      gestures: ['clap','clap','wave'],
+      angaLabels: ['1','2','3'],
+      desc: 'Drutam + laghu of 1. Clap, clap, wave.'
+    },
+    {
+      name: 'Khaṇḍa Cāpu', beats: 5, color: '#8e6cc8',
+      gestures: ['clap','clap','clap','clap','clap'],
+      angaLabels: ['1','2','3','4','5'],
+      desc: 'Five simple claps. One of four most common tāḷas in practice.'
+    },
+    {
+      name: 'Miśra Cāpu', beats: 7, color: '#c86c6c',
+      gestures: ['clap','clap','clap','clap','clap','clap','clap'],
+      angaLabels: ['1','2','3','4','5','6','7'],
+      desc: 'Seven claps. Claps on beats 1, 4, and 6 are often accented.'
+    },
+    {
+      name: 'Khaṇḍa Jāti Ēka Tāḷa', beats: 5, color: '#8e6cc8',
+      gestures: ['clap','pinky','ring','middle','index'],
+      angaLabels: ['1','2','3','4','5'],
+      desc: '5-beat laghu. Clap, pinky, ring, middle, index.'
+    },
+    {
+      name: 'Miśra Jāti Ēka Tāḷa', beats: 7, color: '#c86c6c',
+      gestures: ['clap','pinky','ring','middle','index','thumb','pinky'],
+      angaLabels: ['1','2','3','4','5','6','7'],
+      desc: '7-beat laghu. Clap then all 5 fingers, pinky again for beat 7.'
+    },
+    {
+      name: 'Saṅkīrṇa Jāti Ēka Tāḷa', beats: 9, color: '#6cc87b',
+      gestures: ['clap','pinky','ring','middle','index','thumb','pinky','ring','middle'],
+      angaLabels: ['1','2','3','4','5','6','7','8','9'],
+      desc: '9-beat laghu. Clap + finger sequence twice (ring, middle repeated).'
+    },
+  ];
+
+  const GESTURE_EMOJI = {
+    clap:   '👏', wave: '🤚',
+    pinky:  '🤙', ring: '💍', middle: '🖐', index: '☝️', thumb: '👍'
+  };
+  const GESTURE_CLASS = {
+    clap: 'pip-clap', wave: 'pip-wave',
+    pinky: 'pip-pinky', ring: 'pip-ring', middle: 'pip-middle',
+    index: 'pip-index', thumb: 'pip-thumb'
+  };
+
+  const container = document.getElementById('gesture-cards');
+  const gestureStates = {};
+
+  TALAS.forEach((tala, tIdx) => {
+    const id = 'tgc' + tIdx;
+    gestureStates[id] = { playing: false, beat: -1, timeout: null, bpm: 60 };
+
+    const card = document.createElement('div');
+    card.className = 'tala-gesture-card';
+    card.id = id;
+
+    card.innerHTML = `
+      <div class="tgc-header">
+        <span class="tala-badge" style="background:${tala.color}22;color:${tala.color};border:1px solid ${tala.color}44;">${tala.beats} beats</span>
+        <div><div class="tgc-title">${tala.name}</div><div class="tgc-sub">${tala.desc}</div></div>
+      </div>
+      <div class="beat-sequence" id="seq${tIdx}"></div>
+      <div class="gesture-controls">
+        <button class="btn btn-sm btn-outline" id="gbtn${tIdx}">▶ Play</button>
+        <div class="range-wrap" style="width:160px;">
+          <span>BPM</span>
+          <input type="range" min="30" max="160" value="60" id="gbpm${tIdx}">
+          <span class="val" id="gbpmval${tIdx}">60</span>
+        </div>
+        <span class="gesture-bpm" id="gbeat${tIdx}">Beat —</span>
+      </div>
+    `;
+    container.appendChild(card);
+
+    // Build pips
+    const seq = card.querySelector(`#seq${tIdx}`);
+    tala.gestures.forEach((g, i) => {
+      const pip = document.createElement('div');
+      pip.className = 'beat-pip';
+      pip.id = `pip${tIdx}_${i}`;
+      pip.innerHTML = `
+        <div class="pip-shape ${GESTURE_CLASS[g]}">${GESTURE_EMOJI[g]}</div>
+        <div class="pip-num">${tala.angaLabels[i]}</div>
+        <div class="pip-type" style="color:${tala.color}aa">${g}</div>
+      `;
+      pip.addEventListener('click', () => {
+        initAudio();
+        playGestureTone(g, tala.color);
+      });
+      seq.appendChild(pip);
+    });
+
+    // BPM slider
+    const bpmSlider = card.querySelector(`#gbpm${tIdx}`);
+    const bpmVal = card.querySelector(`#gbpmval${tIdx}`);
+    bpmSlider.addEventListener('input', () => {
+      const v = parseInt(bpmSlider.value);
+      bpmVal.textContent = v;
+      gestureStates[id].bpm = v;
+    });
+
+    // Play button
+    const playBtn = card.querySelector(`#gbtn${tIdx}`);
+    playBtn.addEventListener('click', () => {
+      initAudio();
+      const st = gestureStates[id];
+      if (st.playing) {
+        st.playing = false;
+        clearTimeout(st.timeout);
+        playBtn.textContent = '▶ Play';
+        card.querySelectorAll('.beat-pip').forEach(p => p.classList.remove('current'));
+        card.querySelector(`#gbeat${tIdx}`).textContent = 'Beat —';
+        return;
+      }
+      st.playing = true;
+      st.beat = -1;
+      playBtn.textContent = '■ Stop';
+      function advance() {
+        if (!st.playing) return;
+        st.beat = (st.beat + 1) % tala.beats;
+        // Highlight
+        card.querySelectorAll('.beat-pip').forEach((p,i) => p.classList.toggle('current', i === st.beat));
+        card.querySelector(`#gbeat${tIdx}`).textContent = `Beat ${st.beat + 1} / ${tala.beats}`;
+        playGestureTone(tala.gestures[st.beat], tala.color, st.beat === 0);
+        st.timeout = setTimeout(advance, 60000 / st.bpm);
+      }
+      advance();
+    });
+  });
+
+  function playGestureTone(gesture, color, isSam = false) {
+    if (!audioCtx) return;
+    const freqMap = { clap: 480, wave: 320, pinky: 600, ring: 660, middle: 720, index: 800, thumb: 880 };
+    const freq = freqMap[gesture] || 500;
+    const vol = isSam ? 0.22 : (gesture === 'clap' ? 0.14 : 0.08);
+    const dur = gesture === 'wave' ? 0.15 : 0.07;
+    playTone(freq, dur, vol);
+  }
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  </script>
+</body>
+</html>
