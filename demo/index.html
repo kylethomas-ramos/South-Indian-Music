@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shaping Time — Tala Pathway Demo</title>
+  <title>Explore Tāḷa — Shaping Time</title>
+  <link rel="stylesheet" href="../css/main.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -70,6 +71,7 @@
     }
     canvas { flex: 1; display: block; cursor: grab; }
     canvas.dragging { cursor: grabbing; }
+    .site-nav { position: relative; height: auto; backdrop-filter: none; background: none; border-bottom: none; padding: 0; }
 
     /* --- Side panel for per-tala controls --- */
     #side-panel {
@@ -160,7 +162,18 @@
   </style>
 </head>
 <body>
-  <header>
+  <nav class="site-nav" style="position:fixed;top:0;left:0;right:0;height:44px;background:rgba(10,10,18,0.92);border-bottom:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);z-index:200;display:flex;align-items:center;padding:0 16px;gap:0;">
+    <a class="nav-brand" href="../index.html" style="font-family:Georgia,serif;font-size:15px;font-weight:normal;color:#e0e0e0;text-decoration:none;margin-right:auto;">Shaping <span style="color:#7b8cde">Time</span></a>
+    <ul class="nav-links" style="display:flex;gap:2px;list-style:none;">
+      <li><a href="../index.html" style="display:block;padding:5px 11px;color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;border-radius:5px;">Home</a></li>
+      <li><a href="../history.html" style="display:block;padding:5px 11px;color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;border-radius:5px;">History</a></li>
+      <li><a href="../learn.html" style="display:block;padding:5px 11px;color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;border-radius:5px;">Learn</a></li>
+      <li><a href="index.html" style="display:block;padding:5px 11px;color:#a8b4f0;text-decoration:none;font-size:12px;border-radius:5px;background:rgba(123,140,222,0.12);">Explore</a></li>
+      <li><a href="../metronome.html" style="display:block;padding:5px 11px;color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;border-radius:5px;">Metronome</a></li>
+      <li><a href="../games/index.html" style="display:block;padding:5px 11px;color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;border-radius:5px;">Games</a></li>
+    </ul>
+  </nav>
+  <header style="margin-top:44px;">
     <h1>Shaping Time</h1>
     <div class="controls">
       <label><input type="checkbox" id="toggle-tisra" checked> Tisra (3)</label>

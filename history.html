@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History — Shaping Time</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .history-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 48px;
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      align-items: start;
+    }
+    .history-sidebar {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .sidebar-nav { list-style: none; }
+    .sidebar-nav li { margin-bottom: 2px; }
+    .sidebar-nav a {
+      display: block;
+      padding: 7px 12px;
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      border-radius: 5px;
+      border-left: 2px solid transparent;
+      transition: all var(--transition);
+    }
+    .sidebar-nav a:hover { color: var(--text); background: var(--surface); }
+    .sidebar-nav a.active { color: var(--accent2); border-left-color: var(--accent); background: rgba(123,140,222,0.08); }
+    .sidebar-label { font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 1px; padding: 0 12px; margin-bottom: 8px; }
+    .history-content h2 {
+      font-family: Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: normal;
+      color: var(--text);
+      margin: 64px 0 16px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .history-content h2:first-child { margin-top: 0; border-top: none; }
+    .history-content h3 {
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: normal;
+      color: var(--gold);
+      margin: 28px 0 10px;
+    }
+    .history-content p {
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      font-size: 0.975rem;
+      line-height: 1.75;
+    }
+    .history-content p strong { color: var(--text); }
+    .history-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 12px 0 12px 20px;
+      margin: 28px 0;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+    .history-content blockquote cite {
+      display: block; font-size: 11px; font-style: normal;
+      color: var(--text-mute); margin-top: 8px;
+    }
+    .composer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .composer-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .composer-name {
+      font-family: Georgia, serif;
+      font-size: 1.05rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .composer-years { font-size: 12px; color: var(--accent); margin-bottom: 10px; }
+    .composer-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .instrument-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+    .instrument-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .instrument-name {
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .instrument-native { font-size: 11px; color: var(--text-mute); margin-bottom: 8px; }
+    .instrument-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+    .page-hero {
+      background: linear-gradient(to bottom, rgba(123,140,222,0.08), transparent);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+    .page-hero h1 {
+      font-family: Georgia, serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: normal;
+      margin-bottom: 12px;
+    }
+    .page-hero p { color: var(--text-dim); max-width: 560px; margin: 0 auto; }
+    @media (max-width: 760px) {
+      .history-layout { grid-template-columns: 1fr; }
+      .history-sidebar { display: none; }
+      .composer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="nav-brand" href="../index.html">Shaping <span>Time</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="history.html" class="active">History</a></li>
+      <li><a href="learn.html">Learn</a></li>
+      <li><a href="demo/index.html">Explore</a></li>
+      <li><a href="metronome.html">Metronome</a></li>
+      <li><a href="games/index.html">Games</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-hero">
+      <h1>History &amp; Culture</h1>
+      <p>Two thousand years of rhythmic tradition — from ancient Sanskrit treatises to the modern concert stage.</p>
+    </div>
+
+    <div class="history-layout">
+      <!-- Sidebar -->
+      <aside class="history-sidebar">
+        <div class="sidebar-label">Sections</div>
+        <ul class="sidebar-nav">
+          <li><a href="#origins">Ancient Origins</a></li>
+          <li><a href="#tanjore">The Tanjore Court</a></li>
+          <li><a href="#trinity">The Trinity</a></li>
+          <li><a href="#colonial">Colonial Encounter</a></li>
+          <li><a href="#revival">Nationalist Revival</a></li>
+          <li><a href="#instruments">Instruments</a></li>
+          <li><a href="#dance">Bharata Nāṭyam</a></li>
+          <li><a href="#tani">The Tani Āvartanam</a></li>
+          <li><a href="#modern">Modern Transmission</a></li>
+        </ul>
+      </aside>
+
+      <!-- Main content -->
+      <article class="history-content">
+
+        <h2 id="origins">Ancient Origins</h2>
+        <p>The roots of South Indian classical music reach back more than two thousand years. The earliest written treatise on the performing arts, the <strong>Nāṭyaśāstra</strong> (attributed to the sage Bharata, ca. 200 BCE–200 CE), already describes a sophisticated system of rhythmic syllables and cyclic meters. Many of the core solkaṭṭu syllables — <em>ta, di, tom, nam</em> — appear in this ancient text, testifying to the extraordinary continuity of the oral tradition.</p>
+        <p>The Sanskrit word <strong>tiśra</strong> (the three-beat rhythmic family) derives from <em>tryaśra</em>, meaning "three-sided" — revealing that a spatial metaphor has underlain the concept of tāḷa from its very beginning. The tāḷa system, with its five rhythmic families (jāti) and seven structural templates, is perhaps the most systematically developed theory of rhythm in any musical tradition on earth.</p>
+        <p>Karnatak music's rhythmic structure differs fundamentally from Western meter. A tāḷa is cyclic and regular, but crucially, it carries <strong>no internal accent structure</strong>. In 3/4 time, the first beat is strong; in tiśra jāti ēka tāḷa, all three beats are equal. Accent emerges entirely from the musical phrases placed within the cycle — a compositional act, not a metric given.</p>
+
+        <blockquote>
+          "Rhythmic time in South Indian music is best understood as relational and spatial rather than linear. The cyclic and interactive nature of rhythmic structure becomes immediately perceptible through embodied movement."
+          <cite>— Project framing, influenced by Nelson's <em>Solkaṭṭu Manual</em></cite>
+        </blockquote>
+
+        <h2 id="tanjore">The Tanjore Court</h2>
+        <p>From roughly the sixteenth through the early nineteenth century, the city of <strong>Tanjore (Thanjavur)</strong> in Tamil Nadu served as the cultural capital of South India. Under a succession of royal patrons — most notably the Maratha kings of the 17th–19th centuries — Tanjore became a center of extraordinary artistic production. The court maintained poets, composers, instrumentalists, vocalists, dancers, and drummers, all supported by royal patronage.</p>
+        <p>This courtly system shaped the classical tradition in fundamental ways. Musicians were engaged in lifelong service to the court, which gave them the stability to develop elaborate compositional forms and to transmit their knowledge to the next generation through intensive apprenticeship. The mrdangam tradition, in particular, flourished under such patronage — percussion solos became a recognized art form of the first order.</p>
+        <p>The tradition of the <strong>devadasi</strong> — women dedicated to temple and court service, trained in music and dance — was central to this milieu. Their repertoire of dance compositions, called <em>sadir</em>, included the rhythmic forms that would later be codified as bharata nāṭyam. The devadasi tradition was deeply intertwined with both religious practice and courtly entertainment, and its eventual suppression under colonial and nationalist pressures is one of the most contested episodes in the music's social history.</p>
+
+        <h2 id="trinity">The Trinity of Composers</h2>
+        <p>Three composers born in the late eighteenth century defined the classical Karnatak song repertoire and continue to dominate concert programs today. Their compositions — numbering in the thousands — form the core curriculum of every Karnatak student and the backbone of every concert.</p>
+
+        <div class="composer-grid">
+          <div class="composer-card">
+            <div class="composer-name">Tyagaraja</div>
+            <div class="composer-years">1767 – 1847</div>
+            <div class="composer-desc">The most beloved and prolific of the three, Tyagaraja composed over 600 surviving kritis (songs) in Telugu and Sanskrit, most in devotion to Rama. His works are famous for their melodic richness, deeply personal devotion, and intuitive rhythmic sense. He composed primarily in <em>ādi tāḷa</em> and <em>rūpaka tāḷa</em>.</div>
+          </div>
+          <div class="composer-card">
+            <div class="composer-name">Muttuswami Dīkṣitar</div>
+            <div class="composer-years">1775 – 1835</div>
+            <div class="composer-desc">The most learned of the three — deeply versed in Sanskrit, yoga, and the ancient theoretical literature — Dīkṣitar composed largely in Sanskrit and often in unusual or archaic rāgas. His compositions explore the full theoretical scope of the tradition. He also engaged with Western military band music encountered during the colonial period.</div>
+          </div>
+          <div class="composer-card">
+            <div class="composer-name">Śyāma Śāstri</div>
+            <div class="composer-years">1762 – 1827</div>
+            <div class="composer-desc">The oldest of the three and considered the most melodically refined, Śyāma Śāstri left a smaller but exquisite body of work. His compositions — mostly devotional songs to the goddess Kāmākṣī — are celebrated for their emotional depth and elegant melodic lines.</div>
+          </div>
+        </div>
+
+        <p>These three composers, known collectively as the <strong>Trinity</strong>, did not merely inherit the tradition; they crystallized it. They composed the rāga-tāḷa pairings that now feel definitive, established the concert kriti as the central musical form, and modeled a vision of music as the supreme vehicle of spiritual experience. Their influence on what "classical" Karnatak music means cannot be overstated.</p>
+
+        <h2 id="colonial">The Colonial Encounter</h2>
+        <p>The British colonial presence in South India from the late eighteenth century introduced a powerful new set of forces into the musical world. Early European observers — missionaries, army officers, colonial administrators — were largely dismissive of what they heard. The French missionary Abbé Dubois wrote that Hindu music "may be pleasing to the natives, but I do not think it can give the slightest pleasure to anyone else." Captain Thomas Williamson, in 1813, described Indian music as "monotonous and shrill notes which, for hours together, vibrate on their wearied ears."</p>
+        <p>There were significant exceptions. <strong>Sir William Jones</strong>, in his 1784 essay "On the Musical Modes of the Hindus," produced the first serious European engagement with the theory of Indian music. Jones' framework — emphasizing the tradition's ancient Sanskrit textual basis, the supposed "corruption" of northern music under Islamic rule, and the relative "purity" of the southern tradition — would prove enormously influential, shaping how the Indian urban elite came to understand their own musical heritage.</p>
+
+        <blockquote>
+          "The more authentic versions of the tradition were to be found in the south of India, where it was cultivated 'as a science, long after it had ceased as such in the north.'"
+          <cite>— Discussed in Lakshmi Subramanian, <em>From the Tanjore Court to the Madras Music Academy</em> (2006)</cite>
+        </blockquote>
+
+        <p>C. R. Day's influential 1891 study <em>The Music and Musical Instruments of Southern India and the Deccan</em> pushed further in this direction, arguing that the south's geographic isolation from "Muslim rule" had preserved the tradition's purity. This narrative — however politically fraught — gave the Brahmin elite of Madras a powerful story to tell about their cultural heritage, and it fueled the reformist energy of the following decades.</p>
+
+        <h2 id="revival">Nationalist Revival &amp; the Madras Music Academy</h2>
+        <p>By the first decades of the twentieth century, the Indian nationalist movement had made the performing arts central to the project of cultural self-definition. Music, dance, and drama were mobilized as evidence of India's ancient civilization and its fitness for self-governance. In South India, the urban Brahmin elite of <strong>Madras</strong> took the lead in "classicizing" Karnatak music — reforming it, institutionalizing it, and investing it with the prestige of antiquity.</p>
+        <p>The movement was shaped by a convergence of Orientalist scholarship and the new print culture spreading through colonial India. Music journals, notation systems, and scholarly publications created a literate discourse around what had previously been an entirely oral tradition. This shift was not without controversy: many traditionalists feared that written notation would undermine the deeply embodied, guru-to-student transmission that had sustained the music for millennia.</p>
+        <p>The crucial institutional development was the founding of the <strong>Madras Music Academy</strong> in 1928. The Academy standardized the concert format, held annual conferences to adjudicate questions of authenticity, and gradually codified the repertoire and performance practice that now constitutes the Karnatak classical canon. The decision about which rāgas, tāḷas, and compositional forms were "classical" — and which were not — was made through this institutional process.</p>
+        <p>The politics of this period were complex. The classicization project elevated certain styles and suppressed others; it privileged the Brahmin-dominated concert hall over temple and court contexts; it effectively ended the devadasi tradition by associating it with moral disrepute. The music we know today as "classical" Karnatak music is, in large part, a product of these early-twentieth-century choices.</p>
+
+        <h2 id="instruments">Instruments of the Tradition</h2>
+
+        <div class="instrument-grid">
+          <div class="instrument-card">
+            <div class="instrument-name">Mrdangam</div>
+            <div class="instrument-native">mṛdaṅgam · drum</div>
+            <div class="instrument-desc">The barrel-shaped, double-headed drum that anchors every Karnatak ensemble. Made from jackwood, it produces a range of tones from deep bass strokes to bright treble. The primary vehicle of solkaṭṭu in performance.</div>
+          </div>
+          <div class="instrument-card">
+            <div class="instrument-name">Vīṇā</div>
+            <div class="instrument-native">plucked string</div>
+            <div class="instrument-desc">The ancient plucked string instrument associated with Saraswati, goddess of learning. It has 24 frets and seven strings and can produce the intricate microtonal inflections that define rāga. Often called the "queen of instruments."</div>
+          </div>
+          <div class="instrument-card">
+            <div class="instrument-name">Violin</div>
+            <div class="instrument-native">adopted, 19th century</div>
+            <div class="instrument-desc">Adopted from Western music but played seated with the scroll resting on the chest or foot, producing a characteristic posture and tone. Now the most common melodic accompaniment in Karnatak concerts.</div>
+          </div>
+          <div class="instrument-card">
+            <div class="instrument-name">Ghaṭam</div>
+            <div class="instrument-native">clay pot · percussion</div>
+            <div class="instrument-desc">A clay pot played with the hands, fingers, and wrists. Its bright, resonant tone and percussive attack make it a prized secondary percussion instrument in the ensemble.</div>
+          </div>
+          <div class="instrument-card">
+            <div class="instrument-name">Kanjira</div>
+            <div class="instrument-native">frame drum · percussion</div>
+            <div class="instrument-desc">A small tambourine-like frame drum with a single lizard-skin head. Extremely responsive to subtle finger and palm techniques, it is the most agile of the secondary percussion instruments.</div>
+          </div>
+          <div class="instrument-card">
+            <div class="instrument-name">Venu / Flute</div>
+            <div class="instrument-native">bamboo flute</div>
+            <div class="instrument-desc">The bamboo flute associated especially with Krishna. T. Viswanathan and his family were among the twentieth century's greatest exponents, bringing South Indian flute playing to global audiences.</div>
+          </div>
+        </div>
+
+        <h2 id="dance">Bharata Nāṭyam</h2>
+        <p>South India's classical dance form, <strong>bharata nāṭyam</strong>, is inseparably bound to the musical tradition. Dancers learn their movement patterns — called <em>aḍavu</em> — in precisely the same way drummers learn their strokes: through solkaṭṭu, chanting syllables in tāḷa while the hands count the beats. The body becomes the site where music and movement fuse.</p>
+        <p>In performance, a bharata nāṭyam concert employs multiple simultaneous rhythmic streams: the dancer's footwork, the <em>naṭṭuvanar</em>'s (dance master's) spoken solkaṭṭu and hand cymbals, the mrdangam strokes, and the singer's melody — each layer distinct, all eventually converging on the same cadential point. This multi-layered texture represents Karnatak rhythm at its most complex and beautiful.</p>
+        <p>Originally known as <em>sadir</em> and performed by devadasi women in temple and court contexts, the form was reformulated in the 1930s by <strong>Rukmini Devi Arundale</strong>, who gave it the Sanskrit name "bharata nāṭyam," stripped away elements she considered vulgar, and presented it on the proscenium stage. This transformation — controversial then and still debated now — was central to the classicization project and made bharata nāṭyam a globally recognized symbol of Indian culture.</p>
+
+        <h2 id="tani">The Tani Āvartanam</h2>
+        <p>Every Karnatak concert includes a <strong>tani āvartanam</strong> — a percussion solo in which the drummer (and any accompanying percussion players) takes the stage alone, weaving an extended improvisation within the structure of the tāḷa. The tani is not simply drum showing-off; it follows a precise formal architecture developed over generations.</p>
+        <p>The solo begins with <strong>sarvalaghu</strong> ("time-flow") patterns — relatively simple figures that establish the pulse and the tāḷa. These give way to a series of <strong>mōrā</strong> (rhythmic ending figures), each of which must resolve exactly on the first beat of a cycle. The mōrā is the basic unit of Karnatak rhythmic design: a statement is repeated three times, separated by measured gaps, so that the total duration fills an exact number of cycles.</p>
+        <p>More complex designs — the <strong>kōrvai</strong> — combine multiple mōrās and sarvalaghu figures into longer arcs of tension and resolution. When multiple drummers perform together, sections of <strong>koraippu</strong> ("reduction") see them trading progressively shorter phrases — two cycles, then one, then half, then quarter — until they converge in unison. The solo concludes with the unmistakable <strong>periya mōrā</strong> (big mōrā), which signals to the entire ensemble that the tani is ending and the song is about to resume.</p>
+
+        <h2 id="modern">Modern Transmission</h2>
+        <p>The second half of the twentieth century brought Karnatak music into global circulation. The sitar master <strong>Ravi Shankar</strong> and sarod player <strong>Ali Akbar Khan</strong> introduced Western audiences to Indian classical music in the 1950s and 60s, creating a wave of interest that extended to South India as well. American and European musicians began seeking out teachers, and universities began building "world music" programs.</p>
+        <p>Two brothers, <strong>T. Ranganathan</strong> (mrdangam) and <strong>T. Viswanathan</strong> (flute), dedicated their careers to teaching Karnatak music in the United States — first at the California Institute of the Arts, then at Wesleyan University, where they built one of the first serious academic programs in South Indian classical music. Their teaching and recordings made Karnatak music accessible to a generation of American musicians.</p>
+        <p>Their student <strong>David P. Nelson</strong> — author of the <em>Solkaṭṭu Manual</em> that informs this project — began his own study in 1970 under the legendary court musician <strong>C. S. Sankarasivam</strong> in Madurai. In his very first lesson, Sankarasivam introduced him to solkaṭṭu. Nelson later earned his PhD in ethnomusicology at Wesleyan and has spent decades refining the teaching of solkaṭṭu for American college students, bringing the ancient oral tradition into the classroom.</p>
+        <p>Today, Karnatak music is studied and performed on every continent. Konakkol — solkaṭṭu performed as concert art — has found audiences far beyond South India. And the tāḷa system, with its extraordinary rhythmic sophistication, continues to fascinate and inspire musicians across traditions.</p>
+
+      </article>
+    </div>
+
+    <footer class="site-footer">
+      <p>Content drawn from David P. Nelson's <em>Solkaṭṭu Manual</em> (2008) and Lakshmi Subramanian's <em>From the Tanjore Court to the Madras Music Academy</em> (2006).</p>
+    </footer>
+  </div>
+
+  <script>
+    // Highlight active sidebar section on scroll
+    const sections = document.querySelectorAll('.history-content h2[id]');
+    const links = document.querySelectorAll('.sidebar-nav a');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          links.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.sidebar-nav a[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

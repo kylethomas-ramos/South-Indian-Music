@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mōrā Builder — Shaping Time</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    .mb-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 20px; }
+    .mb-section h3 { font-family: Georgia,serif; font-weight: normal; font-size: 1.05rem; color: var(--gold); margin-bottom: 14px; }
+    .formula-row { font-family: monospace; font-size: 1.1rem; color: var(--text-dim); margin: 12px 0; padding: 12px 16px; background: var(--bg); border-radius: 6px; }
+    .formula-row strong { color: var(--text); }
+    .mora-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 16px 0; }
+    .mora-block-big {
+      padding: 12px 18px; border-radius: 8px; font-family: monospace;
+      font-size: 1rem; border: 2px solid; display: flex; flex-direction: column;
+      align-items: center; gap: 4px; transition: all 0.2s; min-width: 80px;
+    }
+    .mora-block-big .mb-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+    .mora-block-big .mb-val { font-size: 1.1rem; font-weight: bold; }
+    .mora-block-big .mb-pulses { font-size: 10px; opacity: 0.6; }
+    .mb-stmt { background: rgba(123,140,222,0.12); border-color: rgba(123,140,222,0.4); color: var(--accent2); }
+    .mb-gap  { background: rgba(200,160,94,0.12); border-color: rgba(200,160,94,0.4); color: var(--gold); }
+    .mb-plus { color: var(--text-mute); font-size: 1.2rem; }
+    .mb-eq   { color: var(--text-dim); font-size: 1.2rem; }
+    .progress-bar { height: 8px; background: var(--border); border-radius: 4px; margin: 10px 0; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.4s, background 0.3s; }
+    .controls-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+    .num-input { display: flex; align-items: center; gap: 8px; }
+    .num-input button { width: 30px; height: 30px; border-radius: 5px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 16px; cursor: pointer; transition: all 0.15s; }
+    .num-input button:hover { background: var(--surface); }
+    .num-input span { font-family: monospace; font-size: 1.1rem; color: var(--text); min-width: 24px; text-align: center; }
+    .total-display { font-family: monospace; font-size: 1.3rem; padding: 12px 20px; border-radius: 8px; border: 2px solid var(--border2); background: var(--bg); color: var(--text-dim); transition: all 0.3s; }
+    .total-display.match { border-color: var(--sankirna); color: var(--sankirna); background: rgba(108,200,123,0.08); }
+    .total-display.close { border-color: var(--gold); color: var(--gold); }
+    .total-display.over { border-color: var(--misra); color: var(--misra); }
+    .check-btn { padding: 12px 28px; border-radius: 8px; background: var(--accent); border: none; color: #fff; font-size: 15px; cursor: pointer; transition: all 0.2s; }
+    .check-btn:hover { background: var(--accent2); }
+    .check-btn:disabled { opacity: 0.4; cursor: default; }
+    .hint-box { background: rgba(123,140,222,0.07); border: 1px solid rgba(123,140,222,0.2); border-radius: 8px; padding: 14px 18px; font-size: 13px; color: var(--text-dim); margin-top: 14px; line-height: 1.7; display: none; }
+    .hint-box.show { display: block; }
+    .level-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(123,140,222,0.12); color: var(--accent2); border: 1px solid rgba(123,140,222,0.3); }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="nav-brand" href="../index.html">Shaping <span>Time</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../history.html">History</a></li>
+      <li><a href="../learn.html">Learn</a></li>
+      <li><a href="../demo/index.html">Explore</a></li>
+      <li><a href="../metronome.html">Metronome</a></li>
+      <li><a href="index.html" class="active">Games</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="game-wrap">
+      <div class="game-header">
+        <h1>Mōrā Builder</h1>
+        <p>Find the gap length that makes a valid mōrā — landing exactly on sam at the end of the cycle.</p>
+      </div>
+
+      <div class="score-bar">
+        <div><div class="score-val" id="score">0</div><div class="score-label">Score</div></div>
+        <div><div class="score-val" id="level-num">1</div><div class="score-label">Level</div></div>
+        <div><div class="score-val" id="solved">0</div><div class="score-label">Solved</div></div>
+      </div>
+
+      <!-- Puzzle card -->
+      <div class="mb-section" id="puzzle-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h3 style="margin:0;">Puzzle <span id="puz-num">1</span> <span class="level-badge" id="level-badge">Level 1</span></h3>
+          <button class="btn btn-sm btn-outline" onclick="newPuzzle()">New Puzzle</button>
+        </div>
+
+        <!-- Tala info -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:13px;color:var(--text-dim);margin-bottom:6px;">Tāḷa</div>
+          <div id="tala-info" style="font-size:1.05rem;color:var(--text);"></div>
+          <div id="tala-desc" style="font-size:12px;color:var(--text-mute);margin-top:2px;"></div>
+        </div>
+
+        <!-- Statement info -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:13px;color:var(--text-dim);margin-bottom:6px;">Statement (s)</div>
+          <div id="stmt-info" style="font-family:monospace;font-size:1.1rem;color:var(--accent2);"></div>
+          <div id="stmt-pulses" style="font-size:12px;color:var(--text-mute);margin-top:2px;"></div>
+        </div>
+
+        <!-- Target cycles -->
+        <div class="formula-row" id="formula-display"></div>
+
+        <!-- Mora form visual -->
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">Mōrā form:</div>
+        <div class="mora-form" id="mora-form-visual"></div>
+      </div>
+
+      <!-- Gap input -->
+      <div class="mb-section">
+        <h3>Set the Gap (g)</h3>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">The gap is a held note (tām) that separates each statement. Find the value of <em>g</em> so the total fills exactly <strong id="target-cycles-label">?</strong> cycles.</p>
+
+        <div class="controls-row">
+          <div style="font-size:13px;color:var(--text-dim);">Gap pulses (g) =</div>
+          <div class="num-input">
+            <button onclick="changeGap(-1)">−</button>
+            <span id="gap-val">0</span>
+            <button onclick="changeGap(1)">+</button>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">Mōrā total: 3×s + 2×g = <span id="total-pulses">—</span> pulses · Target: <span id="target-pulses-label">—</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+          <div class="total-display" id="total-display">— / — pulses</div>
+        </div>
+
+        <div class="controls-row" style="margin-top:20px;">
+          <button class="check-btn" id="check-btn" onclick="checkAnswer()">Check Answer</button>
+          <button class="btn btn-outline" onclick="showHint()">Show Hint</button>
+          <button class="btn btn-outline btn-sm" id="play-mora-btn" onclick="playMora()">▶ Play</button>
+        </div>
+
+        <div class="hint-box" id="hint-box"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="newPuzzle()">Next Puzzle →</button>
+      </div>
+
+      <!-- Theory box -->
+      <div class="mb-section" style="opacity:0.7;">
+        <h3>How the Mōrā works</h3>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.7;">A mōrā consists of three identical statements separated by equal gaps: <strong style="color:var(--text);">(s)[g](s)[g](s)</strong>. The total duration — 3s + 2g — must equal an exact number of tāḷa cycles. The mōrā must end on <strong style="color:var(--text);">sam</strong> (beat 1). This constraint determines the legal values of g for any given phrase and tāḷa.</p>
+      </div>
+    </div>
+
+    <footer class="site-footer"><p><a href="index.html">← Games</a></p></footer>
+  </div>
+
+  <script>
+  let audioCtx = null;
+  function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+
+  function playTone(freq, dur=0.08, vol=0.1) {
+    if(!audioCtx) return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    osc.start(); osc.stop(t+dur);
+  }
+
+  const PUZZLES = [
+    // Level 1 — simple eka talas
+    { tala:'Tiśra Jāti Ēka (3 beats)', pulsesPerCycle:12, targetCycles:4,
+      phrase:'ta ki ṭa', stmtPulses:3, desc:'12 pulses/cycle × 4 cycles = 48 total', level:1 },
+    { tala:'Chatusra Jāti Ēka (4 beats)', pulsesPerCycle:16, targetCycles:3,
+      phrase:'ta ka di mi', stmtPulses:4, desc:'16 pulses/cycle × 3 cycles = 48 total', level:1 },
+    { tala:'Tiśra Jāti Ēka (3 beats)', pulsesPerCycle:12, targetCycles:6,
+      phrase:'ta ki ṭa ta ki ṭa', stmtPulses:6, desc:'12 pulses/cycle × 6 cycles = 72 total', level:1 },
+    // Level 2 — khanda and misra
+    { tala:'Khaṇḍa Jāti Ēka (5 beats)', pulsesPerCycle:20, targetCycles:4,
+      phrase:'ta ka ta ki ṭa', stmtPulses:5, desc:'20 pulses/cycle × 4 cycles = 80 total', level:2 },
+    { tala:'Miśra Jāti Ēka (7 beats)', pulsesPerCycle:28, targetCycles:3,
+      phrase:'ta ka di mi ta ki ṭa', stmtPulses:7, desc:'28 pulses/cycle × 3 cycles = 84 total', level:2 },
+    // Level 3 — adi tala
+    { tala:'Ādi Tāḷa (8 beats)', pulsesPerCycle:32, targetCycles:3,
+      phrase:'ta ta kṭ tom tom ta', stmtPulses:6, desc:'32 pulses/cycle × 3 cycles = 96 total', level:3 },
+    { tala:'Ādi Tāḷa (8 beats)', pulsesPerCycle:32, targetCycles:2,
+      phrase:'ta din din na', stmtPulses:8, desc:'32 pulses/cycle × 2 cycles = 64 total', level:3 },
+    { tala:'Ādi Tāḷa (8 beats)', pulsesPerCycle:32, targetCycles:4,
+      phrase:'ta ka din din na', stmtPulses:10, desc:'32 pulses/cycle × 4 cycles = 128 total', level:3 },
+    // Level 4 — sankirna
+    { tala:'Saṅkīrṇa Jāti Ēka (9 beats)', pulsesPerCycle:36, targetCycles:4,
+      phrase:'ta ka di mi ta ka ta ki ṭa', stmtPulses:9, desc:'36 pulses/cycle × 4 cycles = 144 total', level:4 },
+  ];
+
+  let currentPuzzle = null, gapVal = 0, score = 0, solvedCount = 0, puzNum = 0;
+
+  function newPuzzle() {
+    const avail = PUZZLES.filter(p => p.level <= Math.min(4, 1 + Math.floor(solvedCount / 2)));
+    currentPuzzle = avail[Math.floor(Math.random() * avail.length)];
+    gapVal = 0;
+    puzNum++;
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('next-btn').classList.remove('show');
+    document.getElementById('hint-box').classList.remove('show');
+    document.getElementById('gap-val').textContent = 0;
+    renderPuzzle();
+    updateDisplay();
+  }
+
+  function renderPuzzle() {
+    const p = currentPuzzle;
+    document.getElementById('puz-num').textContent = puzNum;
+    document.getElementById('level-badge').textContent = `Level ${p.level}`;
+    document.getElementById('tala-info').textContent = p.tala;
+    document.getElementById('tala-desc').textContent = `${p.pulsesPerCycle} pulses per cycle × 4 pulses per beat`;
+    document.getElementById('stmt-info').textContent = p.phrase;
+    document.getElementById('stmt-pulses').textContent = `Statement = ${p.stmtPulses} pulses`;
+    document.getElementById('formula-display').innerHTML = `<strong>Target:</strong> 3 × ${p.stmtPulses} + 2 × g = ${p.targetCycles} × ${p.pulsesPerCycle} = <strong>${p.targetCycles * p.pulsesPerCycle}</strong> pulses`;
+    document.getElementById('target-cycles-label').textContent = `${p.targetCycles} cycle${p.targetCycles>1?'s':''}`;
+    document.getElementById('target-pulses-label').textContent = `${p.targetCycles * p.pulsesPerCycle}`;
+
+    // Mora form visual
+    const vis = document.getElementById('mora-form-visual');
+    vis.innerHTML = '';
+    const addBlock = (cls, label, val, pulses) => {
+      const b = document.createElement('div');
+      b.className = `mora-block-big ${cls}`;
+      b.innerHTML = `<div class="mb-label">${label}</div><div class="mb-val">${val}</div><div class="mb-pulses">${pulses}p</div>`;
+      vis.appendChild(b);
+    };
+    const addText = t => { const s = document.createElement('div'); s.className = 'mb-plus'; s.textContent = t; vis.appendChild(s); };
+
+    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtPulses);
+    addText('+');
+    const gapBlock = document.createElement('div');
+    gapBlock.className = 'mora-block-big mb-gap';
+    gapBlock.id = 'gap-block';
+    gapBlock.innerHTML = `<div class="mb-label">Gap (g)</div><div class="mb-val" id="gap-block-val">?</div><div class="mb-pulses" id="gap-block-p">?p</div>`;
+    vis.appendChild(gapBlock);
+    addText('+');
+    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtPulses);
+    addText('+');
+    const gapBlock2 = gapBlock.cloneNode(true); gapBlock2.id = 'gap-block2';
+    gapBlock2.querySelector('div.mb-val').id = 'gap-block-val2';
+    gapBlock2.querySelector('div.mb-pulses').id = 'gap-block-p2';
+    vis.appendChild(gapBlock2);
+    addText('+');
+    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtPulses);
+    addText('=');
+    const totalBlock = document.createElement('div');
+    totalBlock.className = 'mora-block-big';
+    totalBlock.id = 'total-block';
+    totalBlock.style.borderColor = 'var(--border2)'; totalBlock.style.color = 'var(--text-dim)';
+    totalBlock.innerHTML = `<div class="mb-label">Total</div><div class="mb-val" id="total-block-val">—</div><div class="mb-pulses">pulses</div>`;
+    vis.appendChild(totalBlock);
+  }
+
+  function updateDisplay() {
+    if (!currentPuzzle) return;
+    const p = currentPuzzle;
+    const total = 3 * p.stmtPulses + 2 * gapVal;
+    const target = p.targetCycles * p.pulsesPerCycle;
+    const pct = Math.min(100, Math.round(total / target * 100));
+
+    document.getElementById('total-pulses').textContent = total;
+    document.getElementById('gap-block-val').textContent = gapVal > 0 ? 'tām' : '?';
+    document.getElementById('gap-block-p').textContent = gapVal > 0 ? `${gapVal}p` : '?p';
+    const v2 = document.getElementById('gap-block-val2'); if(v2) v2.textContent = gapVal>0?'tām':'?';
+    const p2 = document.getElementById('gap-block-p2'); if(p2) p2.textContent = gapVal>0?`${gapVal}p`:'?p';
+    document.getElementById('total-block-val').textContent = total;
+
+    const fill = document.getElementById('prog-fill');
+    fill.style.width = pct + '%';
+    const disp = document.getElementById('total-display');
+
+    if (total === target) {
+      fill.style.background = 'var(--sankirna)';
+      disp.className = 'total-display match';
+      disp.textContent = `✓ ${total} / ${target} — perfect fit!`;
+    } else if (total > target) {
+      fill.style.background = 'var(--misra)';
+      disp.className = 'total-display over';
+      disp.textContent = `${total} / ${target} — over by ${total - target}`;
+    } else if (total > target * 0.8) {
+      fill.style.background = 'var(--gold)';
+      disp.className = 'total-display close';
+      disp.textContent = `${total} / ${target} — ${target - total} short`;
+    } else {
+      fill.style.background = 'var(--accent)';
+      disp.className = 'total-display';
+      disp.textContent = `${total} / ${target} pulses`;
+    }
+  }
+
+  function changeGap(delta) {
+    gapVal = Math.max(0, gapVal + delta);
+    document.getElementById('gap-val').textContent = gapVal;
+    updateDisplay();
+  }
+
+  function checkAnswer() {
+    if (!currentPuzzle) return;
+    initAudio();
+    const p = currentPuzzle;
+    const total = 3 * p.stmtPulses + 2 * gapVal;
+    const target = p.targetCycles * p.pulsesPerCycle;
+    const correct = total === target && gapVal > 0;
+
+    const fb = document.getElementById('feedback');
+    if (correct) {
+      fb.className = 'feedback correct';
+      fb.textContent = `✓ Correct! g = ${gapVal} pulses. Mōrā = 3×${p.stmtPulses} + 2×${gapVal} = ${total} pulses = ${p.targetCycles} cycles. Lands on sam!`;
+      score += 20 + (p.level * 5);
+      solvedCount++;
+      document.getElementById('score').textContent = score;
+      document.getElementById('solved').textContent = solvedCount;
+      document.getElementById('level-num').textContent = Math.min(4, 1 + Math.floor(solvedCount / 2));
+      playTone(880, 0.2, 0.18);
+      setTimeout(() => playTone(1100, 0.2, 0.14), 200);
+    } else if (total === 0 || gapVal === 0) {
+      fb.className = 'feedback wrong';
+      fb.textContent = `The gap must be at least 1 pulse. Try adjusting g.`;
+    } else if (total > target) {
+      fb.className = 'feedback wrong';
+      fb.textContent = `Over by ${total-target} pulses. Lower the gap.`;
+      playTone(220, 0.2, 0.1);
+    } else {
+      fb.className = 'feedback wrong';
+      fb.textContent = `Not quite — ${target-total} pulses short. Try a larger gap.`;
+      playTone(220, 0.2, 0.1);
+    }
+    document.getElementById('next-btn').classList.toggle('show', correct);
+  }
+
+  function showHint() {
+    if (!currentPuzzle) return;
+    const p = currentPuzzle;
+    const target = p.targetCycles * p.pulsesPerCycle;
+    const remainder = target - 3 * p.stmtPulses;
+    const gSolution = remainder / 2;
+    const hint = document.getElementById('hint-box');
+    hint.classList.add('show');
+    if (Number.isInteger(gSolution) && gSolution > 0) {
+      hint.innerHTML = `<strong>Hint:</strong> Target = ${target} pulses. Three statements = 3 × ${p.stmtPulses} = ${3*p.stmtPulses} pulses. Remaining for two gaps = ${target} − ${3*p.stmtPulses} = ${remainder} pulses. So g = ${remainder} ÷ 2 = <strong>${gSolution}</strong>.`;
+    } else {
+      hint.innerHTML = `<strong>Hint:</strong> The total must equal ${target} pulses. You have 3 statements of ${p.stmtPulses} = ${3*p.stmtPulses} pulses. The two gaps must account for the rest.`;
+    }
+  }
+
+  function playMora() {
+    if (!currentPuzzle || gapVal <= 0) return;
+    initAudio();
+    const p = currentPuzzle;
+    const syllables = p.phrase.split(' ');
+    const pulseMs = 150; // each pulse = 150ms
+    let t = 0;
+    // Play 3 statements with gaps
+    for (let rep = 0; rep < 3; rep++) {
+      syllables.forEach((s, i) => {
+        setTimeout(() => playTone(523 + i * 30, 0.08, 0.12), t);
+        t += pulseMs;
+      });
+      if (rep < 2) {
+        // Gap = held note
+        setTimeout(() => playTone(300, gapVal * pulseMs / 1000 * 0.9, 0.08), t);
+        t += gapVal * pulseMs;
+      }
+    }
+    // Sam ping at the end
+    setTimeout(() => { playTone(880, 0.15, 0.2); playTone(660, 0.15, 0.12); }, t);
+  }
+
+  document.addEventListener('click', () => initAudio(), { once: true });
+  newPuzzle();
+  </script>
+</body>
+</html>
