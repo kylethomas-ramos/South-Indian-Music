@@ -119,11 +119,15 @@
   }
 
   const PHONETIC = { 'ṭa': 'da', 'ki': 'kee', 'di': 'dee', 'mi': 'mee' };
+  function phoneticize(syl) {
+    if (PHONETIC[syl]) return PHONETIC[syl];
+    return syl.replace(/ṭ/g, 'd');
+  }
 
   function speakPhrase(phrase) {
     window.speechSynthesis.cancel();
     phrase.forEach(s => {
-      const utt = new SpeechSynthesisUtterance(PHONETIC[s] || s);
+      const utt = new SpeechSynthesisUtterance(phoneticize(s));
       utt.rate = 0.9;
       window.speechSynthesis.speak(utt);
     });
