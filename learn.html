@@ -74,6 +74,7 @@
       <li><a href="demo/index.html">Explore</a></li>
       <li><a href="metronome.html">Metronome</a></li>
       <li><a href="games/index.html">Games</a></li>
+      <li><a href="acknowledgements.html">Acknowledgements</a></li>
     </ul>
   </nav>
 
@@ -213,12 +214,18 @@
   }
 
   // ===================== SPEECH (syllables) =====================
-  // Map display characters to phonetic spellings for clearer TTS pronunciation
+  // Map display characters to phonetic spellings for clearer TTS pronunciation.
+  // phoneticize() first tries the exact-match map, then applies a regex replacement
+  // for ṭ → d as a guaranteed fallback in case of any encoding mismatch.
   const PHONETIC = { 'ṭa': 'da', 'ki': 'kee', 'di': 'dee', 'mi': 'mee' };
+  function phoneticize(syl) {
+    if (PHONETIC[syl]) return PHONETIC[syl];
+    return syl.replace(/ṭ/g, 'd');
+  }
 
   function speakSyl(text) {
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(PHONETIC[text] || text);
+    const utt = new SpeechSynthesisUtterance(phoneticize(text));
     utt.rate = 0.9;
     window.speechSynthesis.speak(utt);
   }
@@ -226,7 +233,7 @@
   function speakPhrase(syllables, btns) {
     window.speechSynthesis.cancel();
     syllables.forEach((s, i) => {
-      const utt = new SpeechSynthesisUtterance(PHONETIC[s] || s);
+      const utt = new SpeechSynthesisUtterance(phoneticize(s));
       utt.rate = 0.9;
       utt.onstart = () => {
         btns[i].classList.add('active');
