@@ -141,5 +141,16 @@
       <p>Content drawn from David P. Nelson's <em>Solkaṭṭu Manual</em> (2008) and Lakshmi Subramanian's <em>From the Tanjore Court to the Madras Music Academy</em> (2006).</p>
     </footer>
   </div>
+
+  <script>
+    // Force scroll to top and trigger a layout pass on first load.
+    // Without this, some browsers leave script-free pages visually blank
+    // until user interaction causes a re-render.
+    window.scrollTo(0, 0);
+    document.documentElement.style.scrollBehavior = 'auto';
+    requestAnimationFrame(() => {
+      document.documentElement.style.scrollBehavior = '';
+    });
+  </script>
 </body>
 </html>
