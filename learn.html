@@ -184,13 +184,11 @@
   </div>
 
   <script>
-  // ===================== AUDIO =====================
+  // ===================== AUDIO (trikāla + gestures) =====================
   let audioCtx = null;
   function initAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-
-  const JATI_FREQS = { tisra: 523, chatusra: 659, khanda: 784, misra: 988, sankirna: 1175 };
 
   function playTone(freq, dur = 0.08, vol = 0.12) {
     if (!audioCtx) return;
@@ -214,11 +212,34 @@
     osc.start(); osc.stop(audioCtx.currentTime + 0.05);
   }
 
+  // ===================== SPEECH (syllables) =====================
+  // Map display characters to phonetic spellings for clearer TTS pronunciation
+  const PHONETIC = { 'ṭa': 'ta', 'ki': 'kee', 'di': 'dee', 'mi': 'mee' };
+
+  function speakSyl(text) {
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(PHONETIC[text] || text);
+    utt.rate = 0.9;
+    window.speechSynthesis.speak(utt);
+  }
+
+  function speakPhrase(syllables, btns) {
+    window.speechSynthesis.cancel();
+    syllables.forEach((s, i) => {
+      const utt = new SpeechSynthesisUtterance(PHONETIC[s] || s);
+      utt.rate = 0.9;
+      utt.onstart = () => {
+        btns[i].classList.add('active');
+        setTimeout(() => btns[i].classList.remove('active'), 250);
+      };
+      window.speechSynthesis.speak(utt);
+    });
+  }
+
   // ===================== SYLLABLE ROWS =====================
   document.querySelectorAll('.syllable-row').forEach(row => {
     const jati = row.dataset.jati;
     const syllables = row.dataset.phrase.split(',');
-    const freq = JATI_FREQS[jati] || 600;
 
     syllables.forEach((s, i) => {
       const btn = document.createElement('button');
@@ -226,29 +247,21 @@
       btn.textContent = s;
       btn.addEventListener('click', e => {
         e.stopPropagation();
-        initAudio();
-        playTone(freq * (1 + i * 0.03), 0.1, 0.14);
+        speakSyl(s);
         btn.classList.add('active');
-        setTimeout(() => btn.classList.remove('active'), 200);
+        setTimeout(() => btn.classList.remove('active'), 300);
       });
       row.appendChild(btn);
     });
 
-    // Click row label to play whole phrase
+    // Click row label to speak the whole phrase in sequence
     const label = row.closest('.jati-row')?.querySelector('.jati-label');
     if (label) {
       label.style.cursor = 'pointer';
       label.title = 'Click to play phrase';
       label.addEventListener('click', () => {
-        initAudio();
-        const btns = row.querySelectorAll('.syl');
-        btns.forEach((b, i) => {
-          setTimeout(() => {
-            playTone(freq * (1 + i * 0.03), 0.1, 0.14);
-            b.classList.add('active');
-            setTimeout(() => b.classList.remove('active'), 180);
-          }, i * 200);
-        });
+        const btns = [...row.querySelectorAll('.syl')];
+        speakPhrase(syllables, btns);
       });
     }
   });
