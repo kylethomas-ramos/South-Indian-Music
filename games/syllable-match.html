@@ -206,7 +206,7 @@
     options.forEach(j => {
       const btn = document.createElement('button');
       btn.className = 'choice-btn';
-      btn.innerHTML = `<strong>${j.name}</strong><br><span style="font-size:12px;color:var(--text-mute)">${j.beats} beats · ${j.phrase.join(' ')}</span>`;
+      btn.innerHTML = `<strong>${j.name}</strong>`;
       btn.style.borderLeftColor = j.color;
       btn.addEventListener('click', () => checkAnswer(btn, j.id === q.jati.id, q));
       choices.appendChild(btn);
