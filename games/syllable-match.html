@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="../css/main.css">
   <style>
     .play-phrase-btn {
-      background: rgba(123,140,222,0.12); border: 1px solid var(--accent);
+      background: rgba(212,96,48,0.12); border: 1px solid var(--accent);
       color: var(--accent2); padding: 10px 22px; border-radius: 8px;
       font-size: 14px; cursor: pointer; transition: all 0.2s; margin: 12px 0;
     }
-    .play-phrase-btn:hover { background: rgba(123,140,222,0.22); }
+    .play-phrase-btn:hover { background: rgba(212,96,48,0.22); }
     .mode-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
     .mode-tab { padding: 7px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); font-size: 13px; cursor: pointer; transition: all 0.2s; }
-    .mode-tab.active { background: rgba(123,140,222,0.12); border-color: var(--accent); color: var(--accent2); }
+    .mode-tab.active { background: rgba(212,96,48,0.12); border-color: var(--accent); color: var(--accent2); }
     .results-screen { text-align: center; padding: 40px 0; display: none; }
     .results-screen.show { display: block; }
     .game-screen { }
@@ -23,7 +23,7 @@
     .streak-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
     .q-phrase-display { font-family: 'Courier New', monospace; font-size: clamp(1.3rem,4vw,2rem); letter-spacing: 3px; color: var(--text); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; margin: 12px 0; }
     .syl-lit { padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); }
-    .syl-lit.flash { background: rgba(123,140,222,0.3); border-color: var(--accent); transition: all 0.1s; }
+    .syl-lit.flash { background: rgba(212,96,48,0.3); border-color: var(--accent); transition: all 0.1s; }
   </style>
 </head>
 <body>
@@ -90,11 +90,11 @@
 
   <script>
   const JATIS = [
-    { name: 'Tiśra',    id: 'tisra',    beats: 3, phrase: ['ta','ki','ṭa'],             color: '#5ec4c8', freq: 523 },
-    { name: 'Chatusra', id: 'chatusra', beats: 4, phrase: ['ta','ka','di','mi'],         color: '#c8a05e', freq: 659 },
-    { name: 'Khaṇḍa',  id: 'khanda',  beats: 5, phrase: ['ta','ka','ta','ki','ṭa'],    color: '#8e6cc8', freq: 784 },
-    { name: 'Miśra',   id: 'misra',   beats: 7, phrase: ['ta','ka','di','mi','ta','ki','ṭa'], color: '#c86c6c', freq: 988 },
-    { name: 'Saṅkīrṇa',id: 'sankirna',beats: 9, phrase: ['ta','ka','di','mi','ta','ka','ta','ki','ṭa'], color: '#6cc87b', freq: 1175 },
+    { name: 'Tiśra',    id: 'tisra',    beats: 3, phrase: ['ta','ki','ṭa'],             color: '#f07030', freq: 523 },
+    { name: 'Chatusra', id: 'chatusra', beats: 4, phrase: ['ta','ka','di','mi'],         color: '#d4a820', freq: 659 },
+    { name: 'Khaṇḍa',  id: 'khanda',  beats: 5, phrase: ['ta','ka','ta','ki','ṭa'],    color: '#c03840', freq: 784 },
+    { name: 'Miśra',   id: 'misra',   beats: 7, phrase: ['ta','ka','di','mi','ta','ki','ṭa'], color: '#e85050', freq: 988 },
+    { name: 'Saṅkīrṇa',id: 'sankirna',beats: 9, phrase: ['ta','ka','di','mi','ta','ka','ta','ki','ṭa'], color: '#f0c030', freq: 1175 },
   ];
 
   // Alternate phrases for variety

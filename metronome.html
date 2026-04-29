@@ -17,7 +17,7 @@
       display: flex; flex-direction: column; gap: 4px;
     }
     .tala-option:hover { background: var(--surface2); border-color: var(--border2); }
-    .tala-option.selected { border-color: var(--accent); background: rgba(123,140,222,0.08); }
+    .tala-option.selected { border-color: var(--accent); background: rgba(212,96,48,0.08); }
     .tala-option .to-name { font-size: 14px; font-weight: 600; color: var(--text); }
     .tala-option .to-beats { font-size: 11px; color: var(--text-dim); }
     .tala-option .to-dot { width: 8px; height: 8px; border-radius: 50%; margin-bottom: 4px; }
@@ -37,14 +37,14 @@
     .metro-beat-big .b-type { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     .metro-beat-big.is-sam { border-color: var(--gold); color: var(--gold); }
     .metro-beat-big.is-wave { border-color: var(--accent); }
-    .metro-beat-big.is-finger { border-color: rgba(94,196,200,0.4); }
+    .metro-beat-big.is-finger { border-color: rgba(240,112,48,0.4); }
     .metro-beat-big.active {
       transform: scale(1.2);
       color: #fff;
     }
-    .metro-beat-big.active.is-sam { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 28px rgba(200,160,94,0.6); }
-    .metro-beat-big.active:not(.is-sam) { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 20px rgba(123,140,222,0.4); }
-    .metro-beat-big.active.is-wave:not(.is-sam) { background: #5a70c8; border-color: #5a70c8; }
+    .metro-beat-big.active.is-sam { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 28px rgba(212,160,32,0.6); }
+    .metro-beat-big.active:not(.is-sam) { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 20px rgba(212,96,48,0.55); }
+    .metro-beat-big.active.is-wave:not(.is-sam) { background: #b84020; border-color: #b84020; }
     .bpm-section { text-align: center; margin-bottom: 24px; }
     .bpm-big { font-family: Georgia,serif; font-size: 4rem; line-height: 1; color: var(--text); letter-spacing: -2px; }
     .bpm-big span { font-size: 1.2rem; color: var(--text-dim); }
@@ -52,7 +52,7 @@
     .bpm-row input[type=range] { width: 220px; accent-color: var(--accent); }
     .bpm-tap { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.15s; }
     .bpm-tap:hover { background: var(--surface); }
-    .bpm-tap:active { background: rgba(123,140,222,0.2); border-color: var(--accent); transform: scale(0.97); }
+    .bpm-tap:active { background: rgba(212,96,48,0.2); border-color: var(--accent); transform: scale(0.97); }
     .play-row { display: flex; gap: 14px; align-items: center; justify-content: center; }
     .cycle-counter { font-size: 13px; color: var(--text-dim); text-align: center; margin-top: 14px; }
     .anga-legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 24px; font-size: 12px; color: var(--text-dim); }
@@ -129,28 +129,28 @@
   // ==================== TALA DATA ====================
   // gesture types: sam, clap, wave, pinky, ring, middle, index, thumb
   const TALAS = [
-    { id:'adi',    name:'Ādi Tāḷa',             beats:8, color:'#7b8cde',
+    { id:'adi',    name:'Ādi Tāḷa',             beats:8, color:'#d46030',
       gestures:['sam','pinky','ring','middle','clap','wave','clap','wave'],
       desc:'8 beats · most common' },
-    { id:'rupaka', name:'Rūpaka',                beats:3, color:'#5ec4c8',
+    { id:'rupaka', name:'Rūpaka',                beats:3, color:'#f07030',
       gestures:['sam','clap','wave'],
       desc:'3 beats · drutam + laghu' },
-    { id:'misracapu', name:'Miśra Cāpu',         beats:7, color:'#c86c6c',
+    { id:'misracapu', name:'Miśra Cāpu',         beats:7, color:'#e85050',
       gestures:['sam','clap','clap','clap','clap','clap','clap'],
       desc:'7 beats · capu tāḷa' },
-    { id:'khandacapu', name:'Khaṇḍa Cāpu',       beats:5, color:'#8e6cc8',
+    { id:'khandacapu', name:'Khaṇḍa Cāpu',       beats:5, color:'#c03840',
       gestures:['sam','clap','clap','clap','clap'],
       desc:'5 beats · capu tāḷa' },
-    { id:'tisra',  name:'Tiśra Jāti Ēka',        beats:3, color:'#5ec4c8',
+    { id:'tisra',  name:'Tiśra Jāti Ēka',        beats:3, color:'#f07030',
       gestures:['sam','pinky','ring'],
       desc:'3 beats · laghu only' },
-    { id:'chatusra',name:'Chatusra Jāti Ēka',    beats:4, color:'#c8a05e',
+    { id:'chatusra',name:'Chatusra Jāti Ēka',    beats:4, color:'#d4a820',
       gestures:['sam','pinky','ring','middle'],
       desc:'4 beats · laghu only' },
-    { id:'khanda', name:'Khaṇḍa Jāti Ēka',       beats:5, color:'#8e6cc8',
+    { id:'khanda', name:'Khaṇḍa Jāti Ēka',       beats:5, color:'#c03840',
       gestures:['sam','pinky','ring','middle','index'],
       desc:'5 beats · laghu only' },
-    { id:'misra',  name:'Miśra Jāti Ēka',        beats:7, color:'#c86c6c',
+    { id:'misra',  name:'Miśra Jāti Ēka',        beats:7, color:'#e85050',
       gestures:['sam','pinky','ring','middle','index','thumb','pinky'],
       desc:'7 beats · laghu only' },
   ];

@@ -25,7 +25,7 @@
     .speed-card .speed-num { font-size: 28px; font-weight: bold; color: var(--accent); margin-bottom: 4px; }
     .speed-card .speed-name { font-size: 12px; color: var(--text-dim); }
     .speed-card .speed-syl { font-family: monospace; font-size: 13px; color: var(--text-dim); margin-top: 8px; }
-    .speed-card.playing { border-color: var(--accent); background: rgba(123,140,222,0.08); }
+    .speed-card.playing { border-color: var(--accent); background: rgba(212,96,48,0.08); }
     /* Hand gesture */
     .gesture-section { }
     .tala-gesture-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
@@ -47,12 +47,12 @@
     .beat-pip .pip-num { font-size: 10px; color: var(--text-mute); }
     .beat-pip .pip-type { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
     .pip-clap  { border-color: rgba(255,255,255,0.35); color: var(--text); background: rgba(255,255,255,0.06); }
-    .pip-wave  { border-color: rgba(123,140,222,0.5); color: var(--accent); background: rgba(123,140,222,0.08); }
-    .pip-pinky { border-color: rgba(94,196,200,0.5); color: var(--tisra); background: rgba(94,196,200,0.08); }
-    .pip-ring  { border-color: rgba(200,160,94,0.5); color: var(--gold); background: rgba(200,160,94,0.08); }
-    .pip-middle{ border-color: rgba(142,108,200,0.5); color: var(--khanda); background: rgba(142,108,200,0.08); }
-    .pip-index { border-color: rgba(200,108,108,0.5); color: var(--misra); background: rgba(200,108,108,0.08); }
-    .pip-thumb { border-color: rgba(108,200,123,0.5); color: var(--sankirna); background: rgba(108,200,123,0.08); }
+    .pip-wave  { border-color: rgba(212,96,48,0.5);  color: var(--accent);    background: rgba(212,96,48,0.08); }
+    .pip-pinky { border-color: rgba(240,112,48,0.5); color: var(--tisra);    background: rgba(240,112,48,0.08); }
+    .pip-ring  { border-color: rgba(212,168,32,0.5); color: var(--gold);     background: rgba(212,168,32,0.08); }
+    .pip-middle{ border-color: rgba(192,56,64,0.5);  color: var(--khanda);   background: rgba(192,56,64,0.08); }
+    .pip-index { border-color: rgba(232,80,80,0.5);  color: var(--misra);    background: rgba(232,80,80,0.08); }
+    .pip-thumb { border-color: rgba(240,192,48,0.5); color: var(--sankirna); background: rgba(240,192,48,0.08); }
     .gesture-controls { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
     .gesture-bpm { font-family: monospace; font-size: 14px; color: var(--text-dim); }
     /* Legend */
@@ -354,55 +354,55 @@
   // ===================== HAND GESTURES =====================
   const TALAS = [
     {
-      name: 'Tiśra Jāti Ēka Tāḷa', beats: 3, color: '#5ec4c8',
+      name: 'Tiśra Jāti Ēka Tāḷa', beats: 3, color: '#f07030',
       gestures: ['clap','pinky','ring'],
       angaLabels: ['1','2','3'],
       desc: 'The shortest cycle — a single laghu of 3 beats. Counted: clap, pinky, ring.'
     },
     {
-      name: 'Chatusra Jāti Ēka Tāḷa', beats: 4, color: '#c8a05e',
+      name: 'Chatusra Jāti Ēka Tāḷa', beats: 4, color: '#d4a820',
       gestures: ['clap','pinky','ring','middle'],
       angaLabels: ['1','2','3','4'],
       desc: '4-beat laghu. Clap, pinky, ring, middle.'
     },
     {
-      name: 'Ādi Tāḷa', beats: 8, color: '#7b8cde',
+      name: 'Ādi Tāḷa', beats: 8, color: '#d46030',
       gestures: ['clap','pinky','ring','middle','clap','wave','clap','wave'],
       angaLabels: ['1','2','3','4','5','6','7','8'],
       desc: 'The most common tāḷa (80% of songs). 4-beat laghu + two drutams. Clap, pinky, ring, middle | clap, wave | clap, wave.'
     },
     {
-      name: 'Rūpaka Tāḷa', beats: 3, color: '#5ec4c8',
+      name: 'Rūpaka Tāḷa', beats: 3, color: '#f07030',
       gestures: ['clap','clap','wave'],
       angaLabels: ['1','2','3'],
       desc: 'Drutam + laghu of 1. Clap, clap, wave.'
     },
     {
-      name: 'Khaṇḍa Cāpu', beats: 5, color: '#8e6cc8',
+      name: 'Khaṇḍa Cāpu', beats: 5, color: '#c03840',
       gestures: ['clap','clap','clap','clap','clap'],
       angaLabels: ['1','2','3','4','5'],
       desc: 'Five simple claps. One of four most common tāḷas in practice.'
     },
     {
-      name: 'Miśra Cāpu', beats: 7, color: '#c86c6c',
+      name: 'Miśra Cāpu', beats: 7, color: '#e85050',
       gestures: ['clap','clap','clap','clap','clap','clap','clap'],
       angaLabels: ['1','2','3','4','5','6','7'],
       desc: 'Seven claps. Claps on beats 1, 4, and 6 are often accented.'
     },
     {
-      name: 'Khaṇḍa Jāti Ēka Tāḷa', beats: 5, color: '#8e6cc8',
+      name: 'Khaṇḍa Jāti Ēka Tāḷa', beats: 5, color: '#c03840',
       gestures: ['clap','pinky','ring','middle','index'],
       angaLabels: ['1','2','3','4','5'],
       desc: '5-beat laghu. Clap, pinky, ring, middle, index.'
     },
     {
-      name: 'Miśra Jāti Ēka Tāḷa', beats: 7, color: '#c86c6c',
+      name: 'Miśra Jāti Ēka Tāḷa', beats: 7, color: '#e85050',
       gestures: ['clap','pinky','ring','middle','index','thumb','pinky'],
       angaLabels: ['1','2','3','4','5','6','7'],
       desc: '7-beat laghu. Clap then all 5 fingers, pinky again for beat 7.'
     },
     {
-      name: 'Saṅkīrṇa Jāti Ēka Tāḷa', beats: 9, color: '#6cc87b',
+      name: 'Saṅkīrṇa Jāti Ēka Tāḷa', beats: 9, color: '#f0c030',
       gestures: ['clap','pinky','ring','middle','index','thumb','pinky','ring','middle'],
       angaLabels: ['1','2','3','4','5','6','7','8','9'],
       desc: '9-beat laghu. Clap + finger sequence twice (ring, middle repeated).'
