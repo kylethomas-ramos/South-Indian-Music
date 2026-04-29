@@ -113,9 +113,9 @@
         </div>
 
         <div style="margin-top:20px;">
-          <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">Mōrā total: 3×s + 2×g = <span id="total-pulses">—</span> beats · Target: <span id="target-pulses-label">—</span></div>
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">Mōrā total: 3×s + 2×g = <span id="total-pulses">—</span> beats</div>
           <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
-          <div class="total-display" id="total-display">— / — beats</div>
+          <div class="total-display" id="total-display">— beats</div>
         </div>
 
         <div class="controls-row" style="margin-top:20px;">
@@ -178,11 +178,12 @@
       phrase:'ta ka di mi ta ki ṭa', stmtBeats:7, desc:'7 beats per cycle', level:4 },
   ];
 
-  let currentPuzzle = null, gapVal = 0, score = 0, solvedCount = 0, puzNum = 0;
+  let currentPuzzle = null, lastPuzzle = null, gapVal = 0, score = 0, solvedCount = 0, puzNum = 0;
 
   function newPuzzle() {
-    const avail = PUZZLES.filter(p => p.level <= Math.min(4, 1 + Math.floor(solvedCount / 2)));
+    const avail = PUZZLES.filter(p => p !== lastPuzzle);
     currentPuzzle = avail[Math.floor(Math.random() * avail.length)];
+    lastPuzzle = currentPuzzle;
     gapVal = 0;
     puzNum++;
     document.getElementById('feedback').className = 'feedback';
@@ -203,7 +204,6 @@
     document.getElementById('stmt-pulses').textContent = `Statement = ${p.stmtBeats} beats`;
     document.getElementById('formula-display').innerHTML = `<strong>Target:</strong> 3 × ${p.stmtBeats} + 2 × g = ${p.targetCycles} × ${p.beatsPerCycle} = <strong>${p.targetCycles * p.beatsPerCycle}</strong> beats`;
     document.getElementById('target-cycles-label').textContent = `${p.targetCycles} cycle${p.targetCycles>1?'s':''}`;
-    document.getElementById('target-pulses-label').textContent = `${p.targetCycles * p.beatsPerCycle}`;
 
     // Mora form visual
     const vis = document.getElementById('mora-form-visual');
@@ -262,19 +262,19 @@
     if (total === target) {
       fill.style.background = 'var(--sankirna)';
       disp.className = 'total-display match';
-      disp.textContent = `✓ ${total} / ${target} — perfect fit!`;
+      disp.textContent = `✓ ${total} beats — perfect fit!`;
     } else if (total > target) {
       fill.style.background = 'var(--misra)';
       disp.className = 'total-display over';
-      disp.textContent = `${total} / ${target} — over by ${total - target}`;
+      disp.textContent = `${total} beats — too high`;
     } else if (total > target * 0.8) {
       fill.style.background = 'var(--gold)';
       disp.className = 'total-display close';
-      disp.textContent = `${total} / ${target} — ${target - total} short`;
+      disp.textContent = `${total} beats — getting close`;
     } else {
       fill.style.background = 'var(--accent)';
       disp.className = 'total-display';
-      disp.textContent = `${total} / ${target} beats`;
+      disp.textContent = `${total} beats`;
     }
   }
 
