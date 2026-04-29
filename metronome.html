@@ -254,13 +254,13 @@
     }
 
     // UI update
-    const delay = Math.max(0, time - audioCtx.currentTime);
+    const uiDelay = Math.max(0, time - audioCtx.currentTime);
     setTimeout(() => {
       if (!playing) return;
       document.querySelectorAll('.metro-beat-big').forEach((b,i) => b.classList.toggle('active', i===beat));
       if (beat === 0) cycleCount++;
       document.getElementById('cycle-counter').textContent = `Cycle ${cycleCount} · Beat ${beat+1} of ${selectedTala.beats}`;
-    }, delay * 1000);
+    }, uiDelay * 1000);
   }
 
   function startMetro() {
