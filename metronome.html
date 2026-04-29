@@ -81,7 +81,7 @@
   <div class="page-wrap">
     <div class="metro-page">
       <h1>Karnatak Metronome</h1>
-      <p class="sub">A tāḷa-aware metronome that counts cycles the Karnatak way — distinct sounds for sam, claps, waves, and finger counts.</p>
+      <p class="sub">A tāḷa-aware metronome that counts cycles the Karnatak way. Focus on the hand gesture sequence — the click is the same on every beat.</p>
 
       <!-- Tala Selector -->
       <div class="tala-selector" id="tala-selector"></div>
@@ -113,9 +113,6 @@
 
       <!-- Sound toggles -->
       <div class="sound-toggle">
-        <label class="stoggle"><input type="checkbox" id="snd-sam" checked> Sam clap</label>
-        <label class="stoggle"><input type="checkbox" id="snd-beat" checked> Beat click</label>
-        <label class="stoggle"><input type="checkbox" id="snd-finger"> Finger tones</label>
         <label class="stoggle"><input type="checkbox" id="snd-sub"> Subdivisions (pulses)</label>
       </div>
     </div>
@@ -190,62 +187,33 @@
   let audioCtx = null;
   function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
 
-  function playSound(type, isSam) {
+  function playClick(vol) {
     if (!audioCtx) return;
     const t = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-
-    if (isSam) {
-      // Noise burst for sam
-      const bufSz = Math.floor(audioCtx.sampleRate * 0.12);
-      const buf = audioCtx.createBuffer(1, bufSz, audioCtx.sampleRate);
-      const d = buf.getChannelData(0);
-      for(let i=0;i<bufSz;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/bufSz,2);
-      const src = audioCtx.createBufferSource();
-      src.buffer = buf;
-      const bp = audioCtx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1100; bp.Q.value=0.8;
-      const g2 = audioCtx.createGain(); g2.gain.setValueAtTime(document.getElementById('snd-sam').checked?0.6:0, t);
-      g2.gain.exponentialRampToValueAtTime(0.001, t+0.12);
-      src.connect(bp); bp.connect(g2); g2.connect(audioCtx.destination);
-      src.start(); return;
-    }
-
-    const freqMap = { clap:480, wave:300, sam:700, pinky:600, ring:660, middle:720, index:800, thumb:880 };
-    const volMap  = { clap:0.1, wave:0.07, pinky:0.07, ring:0.07, middle:0.07, index:0.07, thumb:0.07 };
-    const durMap  = { wave:0.15 };
-
-    if (type !== 'clap' && type !== 'wave' && !document.getElementById('snd-finger').checked) {
-      // Finger tones off — play soft click instead
-      if (!document.getElementById('snd-beat').checked) return;
-      osc.frequency.value = 440; osc.type = 'triangle';
-      gain.gain.setValueAtTime(0.05, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t+0.04);
-      osc.start(); osc.stop(t+0.04); return;
-    }
-    if (!document.getElementById('snd-beat').checked && !document.getElementById('snd-finger').checked) return;
-
-    osc.frequency.value = freqMap[type] || 500;
-    osc.type = type === 'wave' ? 'sine' : 'triangle';
-    const vol = volMap[type] || 0.07;
-    const dur = durMap[type] || 0.05;
-    gain.gain.setValueAtTime(vol, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t+dur);
-    osc.start(); osc.stop(t+dur);
+    const bufSz = Math.floor(audioCtx.sampleRate * 0.018);
+    const buf = audioCtx.createBuffer(1, bufSz, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bufSz; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufSz, 3);
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    const bp = audioCtx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.value = 1400; bp.Q.value = 1.2;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(vol, t);
+    src.connect(bp); bp.connect(g); g.connect(audioCtx.destination);
+    src.start();
   }
 
-  // Subdivision tick
   function playSubTick() {
     if (!audioCtx || !document.getElementById('snd-sub').checked) return;
     const t = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const g = audioCtx.createGain();
     osc.connect(g); g.connect(audioCtx.destination);
-    osc.frequency.value = 900; osc.type = 'sine';
-    g.gain.setValueAtTime(0.025, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t+0.025);
-    osc.start(); osc.stop(t+0.025);
+    osc.frequency.value = 1400; osc.type = 'sine';
+    g.gain.setValueAtTime(0.018, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+    osc.start(); osc.stop(t + 0.02);
   }
 
   // ==================== METRONOME ====================
@@ -272,15 +240,9 @@
     const g = selectedTala.gestures[beat];
     const isSam = beat === 0;
 
-    // Schedule audio
-    if (isSam && document.getElementById('snd-sam').checked) {
-      // schedule noise via slight delay (Web Audio hack)
-      const delay = Math.max(0, time - audioCtx.currentTime);
-      setTimeout(() => playSound(g, true), delay * 1000);
-    } else {
-      const delay = Math.max(0, time - audioCtx.currentTime);
-      setTimeout(() => playSound(g, false), delay * 1000);
-    }
+    // Schedule audio — single click sound, sam is slightly accented
+    const delay = Math.max(0, time - audioCtx.currentTime);
+    setTimeout(() => playClick(isSam ? 0.9 : 0.45), delay * 1000);
 
     // Subdivisions (4 per beat)
     if (document.getElementById('snd-sub').checked) {
