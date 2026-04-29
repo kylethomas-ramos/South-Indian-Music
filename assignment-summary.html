@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shaping Time — Assignment Summary</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:      #0e0907;
+      --surface: rgba(255,160,60,0.06);
+      --border:  rgba(200,120,40,0.22);
+      --text:    #f4e8d4;
+      --dim:     rgba(244,220,180,0.60);
+      --mute:    rgba(244,220,180,0.38);
+      --accent:  #d46030;
+      --accent2: #e89040;
+      --gold:    #d4a020;
+    }
+
+    html, body {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 11pt;
+      line-height: 1.6;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 18mm 20mm 16mm;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      border-bottom: 1.5px solid var(--gold);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .header-left h1 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 26pt;
+      font-weight: normal;
+      line-height: 1.1;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .header-left h1 em {
+      font-style: italic;
+      color: var(--accent2);
+    }
+    .header-left .tagline {
+      font-size: 9.5pt;
+      color: var(--dim);
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+    .header-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .header-right .byline {
+      font-size: 9pt;
+      color: var(--mute);
+      line-height: 1.8;
+    }
+    .header-right .byline strong {
+      color: var(--text);
+      font-weight: 600;
+      display: block;
+      font-size: 10pt;
+    }
+
+    /* ── INTRO ── */
+    .intro {
+      font-family: Georgia, serif;
+      font-size: 11pt;
+      color: var(--dim);
+      line-height: 1.75;
+      margin-bottom: 22px;
+      border-left: 3px solid var(--accent);
+      padding-left: 14px;
+    }
+    .intro strong { color: var(--text); font-weight: normal; font-style: italic; }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    /* ── FEATURES GRID ── */
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 12px 14px;
+    }
+    .feature-card .fc-title {
+      font-family: Georgia, serif;
+      font-size: 11pt;
+      color: var(--text);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .feature-card .fc-icon { font-size: 13pt; line-height: 1; }
+    .feature-card .fc-tag {
+      font-size: 7.5pt;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: rgba(212,96,48,0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(212,96,48,0.3);
+      margin-left: auto;
+    }
+    .feature-card .fc-desc {
+      font-size: 8.5pt;
+      color: var(--dim);
+      line-height: 1.55;
+    }
+
+    /* ── TALA CHIPS ── */
+    .tala-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+      align-items: center;
+    }
+    .tala-row .tala-label { font-size: 8pt; color: var(--mute); margin-right: 2px; }
+    .chip {
+      font-size: 8pt;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid;
+      letter-spacing: 0.2px;
+    }
+    .c-tisra    { background: rgba(240,112,48,0.12); color: #f07030; border-color: rgba(240,112,48,0.3); }
+    .c-chatusra { background: rgba(212,168,32,0.12); color: #d4a820; border-color: rgba(212,168,32,0.3); }
+    .c-khanda   { background: rgba(192,56,64,0.12);  color: #c03840; border-color: rgba(192,56,64,0.3); }
+    .c-misra    { background: rgba(232,80,80,0.12);  color: #e85050; border-color: rgba(232,80,80,0.3); }
+    .c-sankirna { background: rgba(240,192,48,0.12); color: #f0c030; border-color: rgba(240,192,48,0.3); }
+
+    /* ── QUOTE ── */
+    .pull-quote {
+      font-family: Georgia, serif;
+      font-size: 10pt;
+      font-style: italic;
+      color: var(--dim);
+      line-height: 1.7;
+      border-left: 3px solid var(--gold);
+      padding: 10px 0 10px 14px;
+      margin-bottom: 22px;
+    }
+    .pull-quote cite {
+      display: block;
+      font-style: normal;
+      font-size: 8pt;
+      color: var(--mute);
+      margin-top: 6px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+    .footer .url-block .url-label {
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--mute);
+      margin-bottom: 2px;
+    }
+    .footer .url-block .url {
+      font-family: 'Courier New', monospace;
+      font-size: 9.5pt;
+      color: var(--accent2);
+    }
+    .footer .course-block {
+      text-align: right;
+      font-size: 8pt;
+      color: var(--mute);
+      line-height: 1.7;
+    }
+    .footer .course-block strong { color: var(--dim); font-weight: normal; }
+
+    @media print {
+      html, body { width: 210mm; }
+      .page { min-height: 0; }
+      @page { size: A4; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <h1><em>Shaping Time</em> — South Indian Music</h1>
+        <div class="tagline">An interactive guide to the rhythmic world of Karnatak music</div>
+      </div>
+      <div class="header-right">
+        <div class="byline">
+          <strong>Kyle Thomas Ramos</strong>
+          MUSI 4106 · Yale University<br>
+          Spring 2026
+        </div>
+      </div>
+    </div>
+
+    <!-- INTRO -->
+    <p class="intro">
+      <em>Shaping Time</em> is a fully interactive educational website built around the rhythmic language of South Indian classical music — specifically the system of <strong>solkaṭṭu</strong>, the spoken syllable practice, and <strong>tāḷa</strong>, the cyclic metric framework that governs Karnatak performance. The site is designed for learners and practitioners who want to develop an embodied, hands-on understanding of these concepts through interactive tools, games, and visualizations.
+    </p>
+
+    <!-- TALA CHIPS -->
+    <div class="tala-row">
+      <span class="tala-label">Jāti system:</span>
+      <span class="chip c-tisra">Tiśra · 3</span>
+      <span class="chip c-chatusra">Chatusra · 4</span>
+      <span class="chip c-khanda">Khaṇḍa · 5</span>
+      <span class="chip c-misra">Miśra · 7</span>
+      <span class="chip c-sankirna">Saṅkīrṇa · 9</span>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="section-label">What's on the site</div>
+    <div class="features">
+      <div class="feature-card">
+        <div class="fc-title"><span class="fc-icon">🤲</span> Learn the Basics <span class="fc-tag">Interactive</span></div>
+        <div class="fc-desc">An interactive syllable guide with spoken audio, trikāla (three-speed) exercises, and an animated hand gesture guide for every tāḷa — covering all five jātis and eight common tāḷas.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-title"><span class="fc-icon">⬡</span> Explore Tāḷa <span class="fc-tag">Visualizer</span></div>
+        <div class="fc-desc">An animated polygon visualizer where each tāḷa cycle is represented as a rotating polygon. Multiple cycles can be layered to reveal the moment of convergence — sam — in real time.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-title"><span class="fc-icon">🥁</span> Practice Metronome <span class="fc-tag">Tool</span></div>
+        <div class="fc-desc">A tāḷa-aware metronome with eight tāḷa options, animated beat indicators showing the hand gesture sequence (sam, clap, wave, finger counts), tap tempo, and subdivision control.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-title"><span class="fc-icon">🎮</span> Games <span class="fc-tag">3 Games</span></div>
+        <div class="fc-desc">Three interactive games: Syllable Match (identify jāti from a spoken phrase), Mōrā Builder (calculate the gap length for a valid mōrā form), and the Hand Gesture Guide.</div>
+      </div>
+    </div>
+
+    <!-- QUOTE -->
+    <div class="pull-quote">
+      "Solkaṭṭu binds spoken material together within the metric context called tāḷa, which is counted by recurrent patterns of hand gestures. The relationship between the phrases and the tāḷa is either accurate or not: if so, there is a feeling of confidence."
+      <cite>— David P. Nelson, <em>Solkaṭṭu Manual</em> (2008) · Primary source for all site content</cite>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="url-block">
+        <div class="url-label">Live website</div>
+        <div class="url">https://kylethomas-ramos.github.io/South-Indian-Music/</div>
+      </div>
+      <div class="course-block">
+        <strong>MUSI 4106: Exploring South Indian Rhythmic Design</strong><br>
+        Instructor: Fugan Dineen · Yale University
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
