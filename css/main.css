@@ -6,25 +6,25 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg:        #0a0a12;
-  --bg2:       #0f0f1a;
-  --surface:   rgba(255,255,255,0.04);
-  --surface2:  rgba(255,255,255,0.07);
-  --border:    rgba(255,255,255,0.08);
-  --border2:   rgba(255,255,255,0.14);
-  --text:      #e0e0e0;
-  --text-dim:  rgba(255,255,255,0.45);
-  --text-mute: rgba(255,255,255,0.25);
-  --accent:    #7b8cde;
-  --accent2:   #a8b4f0;
-  --gold:      #c8a05e;
+  --bg:        #0e0907;
+  --bg2:       #160d09;
+  --surface:   rgba(255,160,60,0.05);
+  --surface2:  rgba(255,160,60,0.10);
+  --border:    rgba(200,120,40,0.18);
+  --border2:   rgba(200,120,40,0.32);
+  --text:      #f4e8d4;
+  --text-dim:  rgba(244,220,180,0.60);
+  --text-mute: rgba(244,220,180,0.35);
+  --accent:    #d46030;
+  --accent2:   #e89040;
+  --gold:      #d4a020;
 
   /* tala colors */
-  --tisra:    #5ec4c8;
-  --chatusra: #c8a05e;
-  --khanda:   #8e6cc8;
-  --misra:    #c86c6c;
-  --sankirna: #6cc87b;
+  --tisra:    #f07030;
+  --chatusra: #d4a820;
+  --khanda:   #c03840;
+  --misra:    #e85050;
+  --sankirna: #f0c030;
 
   --nav-h: 56px;
   --radius: 10px;
@@ -47,7 +47,7 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: var(--nav-h);
-  background: rgba(10,10,18,0.92);
+  background: rgba(14,9,7,0.94);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(12px);
   z-index: 100;
@@ -67,7 +67,7 @@ body {
   white-space: nowrap;
   margin-right: auto;
 }
-.nav-brand span { color: var(--accent); }
+.nav-brand span { color: var(--accent2); }
 
 .nav-links {
   display: flex;
@@ -85,7 +85,7 @@ body {
   letter-spacing: 0.2px;
 }
 .nav-links a:hover { color: var(--text); background: var(--surface2); }
-.nav-links a.active { color: var(--accent2); background: rgba(123,140,222,0.12); }
+.nav-links a.active { color: var(--accent2); background: rgba(212,96,48,0.15); }
 
 /* hamburger for mobile */
 .nav-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 8px; }
@@ -110,7 +110,7 @@ body {
 .hero-canvas {
   position: absolute;
   inset: 0;
-  opacity: 0.35;
+  opacity: 0.40;
 }
 .hero-content { position: relative; z-index: 1; max-width: 700px; }
 .hero h1 {
@@ -164,7 +164,7 @@ body {
   color: var(--text);
   border-color: var(--border2);
 }
-.btn-outline:hover { background: var(--surface2); border-color: rgba(255,255,255,0.25); }
+.btn-outline:hover { background: var(--surface2); border-color: rgba(200,120,40,0.50); }
 .btn-sm { padding: 6px 14px; font-size: 12px; }
 
 /* ─── SECTIONS ────────────────────────────────────── */
@@ -232,7 +232,7 @@ body {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 20px;
-  background: rgba(123,140,222,0.15);
+  background: rgba(212,96,48,0.15);
   color: var(--accent2);
   margin-top: auto;
   width: fit-content;
@@ -357,11 +357,11 @@ body {
 .syl:hover { filter: brightness(1.2); transform: scale(1.05); }
 .syl.active { transform: scale(1.15); filter: brightness(1.4); }
 
-.syl-tisra    { background: rgba(94,196,200,0.15); color: var(--tisra);    border-color: rgba(94,196,200,0.3); }
-.syl-chatusra { background: rgba(200,160,94,0.15); color: var(--chatusra); border-color: rgba(200,160,94,0.3); }
-.syl-khanda   { background: rgba(142,108,200,0.15); color: var(--khanda);  border-color: rgba(142,108,200,0.3); }
-.syl-misra    { background: rgba(200,108,108,0.15); color: var(--misra);   border-color: rgba(200,108,108,0.3); }
-.syl-sankirna { background: rgba(108,200,123,0.15); color: var(--sankirna);border-color: rgba(108,200,123,0.3); }
+.syl-tisra    { background: rgba(240,112,48,0.15); color: var(--tisra);    border-color: rgba(240,112,48,0.35); }
+.syl-chatusra { background: rgba(212,168,32,0.15); color: var(--chatusra); border-color: rgba(212,168,32,0.35); }
+.syl-khanda   { background: rgba(192,56,64,0.15);  color: var(--khanda);   border-color: rgba(192,56,64,0.35); }
+.syl-misra    { background: rgba(232,80,80,0.15);  color: var(--misra);    border-color: rgba(232,80,80,0.35); }
+.syl-sankirna { background: rgba(240,192,48,0.15); color: var(--sankirna); border-color: rgba(240,192,48,0.35); }
 
 /* ─── HAND GESTURE ────────────────────────────────── */
 .gesture-display {
@@ -414,7 +414,7 @@ body {
   border-color: var(--accent);
   color: #fff;
   transform: scale(1.15);
-  box-shadow: 0 0 20px rgba(123,140,222,0.4);
+  box-shadow: 0 0 20px rgba(212,96,48,0.55);
 }
 .metro-beat.sam {
   border-color: var(--gold);
@@ -422,7 +422,7 @@ body {
 .metro-beat.sam.current {
   background: var(--gold);
   border-color: var(--gold);
-  box-shadow: 0 0 24px rgba(200,160,94,0.5);
+  box-shadow: 0 0 24px rgba(212,160,32,0.55);
 }
 .metro-beat-label { font-size: 9px; opacity: 0.7; text-transform: uppercase; }
 .metro-bpm-display {
@@ -525,8 +525,8 @@ body {
   text-align: center;
 }
 .choice-btn:hover { background: var(--surface2); border-color: var(--accent); }
-.choice-btn.correct { background: rgba(108,200,123,0.2); border-color: var(--sankirna); color: var(--sankirna); }
-.choice-btn.wrong   { background: rgba(200,108,108,0.2); border-color: var(--misra); color: var(--misra); }
+.choice-btn.correct { background: rgba(240,192,48,0.18); border-color: var(--sankirna); color: var(--sankirna); }
+.choice-btn.wrong   { background: rgba(232,80,80,0.18);  border-color: var(--misra);    color: var(--misra); }
 .feedback {
   padding: 12px 20px;
   border-radius: 8px;
@@ -535,8 +535,8 @@ body {
   margin-top: 16px;
   display: none;
 }
-.feedback.correct { background: rgba(108,200,123,0.15); color: var(--sankirna); display: block; }
-.feedback.wrong   { background: rgba(200,108,108,0.15); color: var(--misra); display: block; }
+.feedback.correct { background: rgba(240,192,48,0.12); color: var(--sankirna); display: block; }
+.feedback.wrong   { background: rgba(232,80,80,0.12);  color: var(--misra);    display: block; }
 .next-btn {
   display: block;
   width: 100%;
@@ -544,7 +544,7 @@ body {
   margin-top: 16px;
   border-radius: 8px;
   border: 1px solid var(--accent);
-  background: rgba(123,140,222,0.1);
+  background: rgba(212,96,48,0.10);
   color: var(--accent2);
   font-size: 15px;
   cursor: pointer;
@@ -552,7 +552,7 @@ body {
   display: none;
 }
 .next-btn.show { display: block; }
-.next-btn:hover { background: rgba(123,140,222,0.2); }
+.next-btn:hover { background: rgba(212,96,48,0.22); }
 
 /* Mora builder specific */
 .mora-timeline {
@@ -578,8 +578,8 @@ body {
   border: 1px solid;
   user-select: none;
 }
-.mora-block.statement { background: rgba(123,140,222,0.15); color: var(--accent2); border-color: rgba(123,140,222,0.3); }
-.mora-block.gap       { background: rgba(200,160,94,0.15); color: var(--gold); border-color: rgba(200,160,94,0.3); }
+.mora-block.statement { background: rgba(212,96,48,0.15); color: var(--accent2); border-color: rgba(212,96,48,0.35); }
+.mora-block.gap       { background: rgba(212,160,32,0.15); color: var(--gold);   border-color: rgba(212,160,32,0.35); }
 .mora-block:hover { filter: brightness(1.3); }
 .pulse-counter {
   font-family: monospace;
@@ -624,11 +624,11 @@ select:focus { outline: none; border-color: var(--accent); }
   font-size: 12px;
   font-weight: 600;
 }
-.badge-tisra    { background: rgba(94,196,200,0.15);  color: var(--tisra);    border: 1px solid rgba(94,196,200,0.3); }
-.badge-chatusra { background: rgba(200,160,94,0.15);  color: var(--chatusra); border: 1px solid rgba(200,160,94,0.3); }
-.badge-khanda   { background: rgba(142,108,200,0.15); color: var(--khanda);   border: 1px solid rgba(142,108,200,0.3); }
-.badge-misra    { background: rgba(200,108,108,0.15); color: var(--misra);    border: 1px solid rgba(200,108,108,0.3); }
-.badge-sankirna { background: rgba(108,200,123,0.15); color: var(--sankirna); border: 1px solid rgba(108,200,123,0.3); }
+.badge-tisra    { background: rgba(240,112,48,0.15); color: var(--tisra);    border: 1px solid rgba(240,112,48,0.35); }
+.badge-chatusra { background: rgba(212,168,32,0.15); color: var(--chatusra); border: 1px solid rgba(212,168,32,0.35); }
+.badge-khanda   { background: rgba(192,56,64,0.15);  color: var(--khanda);   border: 1px solid rgba(192,56,64,0.35); }
+.badge-misra    { background: rgba(232,80,80,0.15);  color: var(--misra);    border: 1px solid rgba(232,80,80,0.35); }
+.badge-sankirna { background: rgba(240,192,48,0.15); color: var(--sankirna); border: 1px solid rgba(240,192,48,0.35); }
 
 /* ─── FOOTER ──────────────────────────────────────── */
 .site-footer {
@@ -643,7 +643,7 @@ select:focus { outline: none; border-color: var(--accent); }
 
 /* ─── RESPONSIVE ──────────────────────────────────── */
 @media (max-width: 680px) {
-  .nav-links { display: none; flex-direction: column; position: absolute; top: var(--nav-h); left: 0; right: 0; background: rgba(10,10,18,0.97); border-bottom: 1px solid var(--border); padding: 12px; }
+  .nav-links { display: none; flex-direction: column; position: absolute; top: var(--nav-h); left: 0; right: 0; background: rgba(14,9,7,0.97); border-bottom: 1px solid var(--border); padding: 12px; }
   .nav-links.open { display: flex; }
   .nav-toggle { display: block; margin-left: auto; }
   .choices { grid-template-columns: 1fr; }
