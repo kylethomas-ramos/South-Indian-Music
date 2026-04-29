@@ -104,7 +104,7 @@
         <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">The gap is a held note (tām) that separates each statement. Find the value of <em>g</em> so the total fills exactly <strong id="target-cycles-label">?</strong> cycles.</p>
 
         <div class="controls-row">
-          <div style="font-size:13px;color:var(--text-dim);">Gap pulses (g) =</div>
+          <div style="font-size:13px;color:var(--text-dim);">Gap beats (g) =</div>
           <div class="num-input">
             <button onclick="changeGap(-1)">−</button>
             <span id="gap-val">0</span>
@@ -113,9 +113,9 @@
         </div>
 
         <div style="margin-top:20px;">
-          <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">Mōrā total: 3×s + 2×g = <span id="total-pulses">—</span> pulses · Target: <span id="target-pulses-label">—</span></div>
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">Mōrā total: 3×s + 2×g = <span id="total-pulses">—</span> beats · Target: <span id="target-pulses-label">—</span></div>
           <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
-          <div class="total-display" id="total-display">— / — pulses</div>
+          <div class="total-display" id="total-display">— / — beats</div>
         </div>
 
         <div class="controls-row" style="margin-top:20px;">
@@ -154,28 +154,28 @@
   }
 
   const PUZZLES = [
-    // Level 1 — simple eka talas
-    { tala:'Tiśra Jāti Ēka (3 beats)', pulsesPerCycle:12, targetCycles:4,
-      phrase:'ta ki ṭa', stmtPulses:3, desc:'12 pulses/cycle × 4 cycles = 48 total', level:1 },
-    { tala:'Chatusra Jāti Ēka (4 beats)', pulsesPerCycle:16, targetCycles:3,
-      phrase:'ta ka di mi', stmtPulses:4, desc:'16 pulses/cycle × 3 cycles = 48 total', level:1 },
-    { tala:'Tiśra Jāti Ēka (3 beats)', pulsesPerCycle:12, targetCycles:6,
-      phrase:'ta ki ṭa ta ki ṭa', stmtPulses:6, desc:'12 pulses/cycle × 6 cycles = 72 total', level:1 },
-    // Level 2 — khanda and misra
-    { tala:'Khaṇḍa Jāti Ēka (5 beats)', pulsesPerCycle:20, targetCycles:4,
-      phrase:'ta ka ta ki ṭa', stmtPulses:5, desc:'20 pulses/cycle × 4 cycles = 80 total', level:2 },
-    { tala:'Miśra Jāti Ēka (7 beats)', pulsesPerCycle:28, targetCycles:3,
-      phrase:'ta ka di mi ta ki ṭa', stmtPulses:7, desc:'28 pulses/cycle × 3 cycles = 84 total', level:2 },
-    // Level 3 — adi tala
-    { tala:'Ādi Tāḷa (8 beats)', pulsesPerCycle:32, targetCycles:3,
-      phrase:'ta ta kṭ tom tom ta', stmtPulses:6, desc:'32 pulses/cycle × 3 cycles = 96 total', level:3 },
-    { tala:'Ādi Tāḷa (8 beats)', pulsesPerCycle:32, targetCycles:2,
-      phrase:'ta din din na', stmtPulses:8, desc:'32 pulses/cycle × 2 cycles = 64 total', level:3 },
-    { tala:'Ādi Tāḷa (8 beats)', pulsesPerCycle:32, targetCycles:4,
-      phrase:'ta ka din din na', stmtPulses:10, desc:'32 pulses/cycle × 4 cycles = 128 total', level:3 },
-    // Level 4 — sankirna
-    { tala:'Saṅkīrṇa Jāti Ēka (9 beats)', pulsesPerCycle:36, targetCycles:4,
-      phrase:'ta ka di mi ta ka ta ki ṭa', stmtPulses:9, desc:'36 pulses/cycle × 4 cycles = 144 total', level:4 },
+    // Level 1 — short phrases, familiar tāḷa
+    { tala:'Ādi Tāḷa (8 beats)', beatsPerCycle:8, targetCycles:1,
+      phrase:'ta ka', stmtBeats:2, desc:'8 beats per cycle', level:1 },
+    { tala:'Rūpaka (3 beats)', beatsPerCycle:3, targetCycles:5,
+      phrase:'ta ki ṭa', stmtBeats:3, desc:'3 beats per cycle', level:1 },
+    // Level 2 — 4-beat statements
+    { tala:'Chatusra Jāti Ēka (4 beats)', beatsPerCycle:4, targetCycles:4,
+      phrase:'ta ka di mi', stmtBeats:4, desc:'4 beats per cycle', level:2 },
+    { tala:'Ādi Tāḷa (8 beats)', beatsPerCycle:8, targetCycles:2,
+      phrase:'ta ka di mi', stmtBeats:4, desc:'8 beats per cycle', level:2 },
+    // Level 3 — khaṇḍa and longer phrases
+    { tala:'Khaṇḍa Cāpu (5 beats)', beatsPerCycle:5, targetCycles:5,
+      phrase:'ta ka ta ki ṭa', stmtBeats:5, desc:'5 beats per cycle', level:3 },
+    { tala:'Ādi Tāḷa (8 beats)', beatsPerCycle:8, targetCycles:3,
+      phrase:'ta ki ṭa ta ki ṭa', stmtBeats:6, desc:'8 beats per cycle', level:3 },
+    // Level 4 — miśra cāpu and full-cycle phrases
+    { tala:'Miśra Cāpu (7 beats)', beatsPerCycle:7, targetCycles:3,
+      phrase:'ta ka ta ki ṭa', stmtBeats:5, desc:'7 beats per cycle', level:4 },
+    { tala:'Ādi Tāḷa (8 beats)', beatsPerCycle:8, targetCycles:4,
+      phrase:'ta ka di mi ta ki ṭa ta', stmtBeats:8, desc:'8 beats per cycle', level:4 },
+    { tala:'Miśra Cāpu (7 beats)', beatsPerCycle:7, targetCycles:5,
+      phrase:'ta ka di mi ta ki ṭa', stmtBeats:7, desc:'7 beats per cycle', level:4 },
   ];
 
   let currentPuzzle = null, gapVal = 0, score = 0, solvedCount = 0, puzNum = 0;
@@ -198,61 +198,61 @@
     document.getElementById('puz-num').textContent = puzNum;
     document.getElementById('level-badge').textContent = `Level ${p.level}`;
     document.getElementById('tala-info').textContent = p.tala;
-    document.getElementById('tala-desc').textContent = `${p.pulsesPerCycle} pulses per cycle × 4 pulses per beat`;
+    document.getElementById('tala-desc').textContent = p.desc;
     document.getElementById('stmt-info').textContent = p.phrase;
-    document.getElementById('stmt-pulses').textContent = `Statement = ${p.stmtPulses} pulses`;
-    document.getElementById('formula-display').innerHTML = `<strong>Target:</strong> 3 × ${p.stmtPulses} + 2 × g = ${p.targetCycles} × ${p.pulsesPerCycle} = <strong>${p.targetCycles * p.pulsesPerCycle}</strong> pulses`;
+    document.getElementById('stmt-pulses').textContent = `Statement = ${p.stmtBeats} beats`;
+    document.getElementById('formula-display').innerHTML = `<strong>Target:</strong> 3 × ${p.stmtBeats} + 2 × g = ${p.targetCycles} × ${p.beatsPerCycle} = <strong>${p.targetCycles * p.beatsPerCycle}</strong> beats`;
     document.getElementById('target-cycles-label').textContent = `${p.targetCycles} cycle${p.targetCycles>1?'s':''}`;
-    document.getElementById('target-pulses-label').textContent = `${p.targetCycles * p.pulsesPerCycle}`;
+    document.getElementById('target-pulses-label').textContent = `${p.targetCycles * p.beatsPerCycle}`;
 
     // Mora form visual
     const vis = document.getElementById('mora-form-visual');
     vis.innerHTML = '';
-    const addBlock = (cls, label, val, pulses) => {
+    const addBlock = (cls, label, val, beats) => {
       const b = document.createElement('div');
       b.className = `mora-block-big ${cls}`;
-      b.innerHTML = `<div class="mb-label">${label}</div><div class="mb-val">${val}</div><div class="mb-pulses">${pulses}p</div>`;
+      b.innerHTML = `<div class="mb-label">${label}</div><div class="mb-val">${val}</div><div class="mb-pulses">${beats}b</div>`;
       vis.appendChild(b);
     };
     const addText = t => { const s = document.createElement('div'); s.className = 'mb-plus'; s.textContent = t; vis.appendChild(s); };
 
-    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtPulses);
+    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtBeats);
     addText('+');
     const gapBlock = document.createElement('div');
     gapBlock.className = 'mora-block-big mb-gap';
     gapBlock.id = 'gap-block';
-    gapBlock.innerHTML = `<div class="mb-label">Gap (g)</div><div class="mb-val" id="gap-block-val">?</div><div class="mb-pulses" id="gap-block-p">?p</div>`;
+    gapBlock.innerHTML = `<div class="mb-label">Gap (g)</div><div class="mb-val" id="gap-block-val">?</div><div class="mb-pulses" id="gap-block-p">?b</div>`;
     vis.appendChild(gapBlock);
     addText('+');
-    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtPulses);
+    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtBeats);
     addText('+');
     const gapBlock2 = gapBlock.cloneNode(true); gapBlock2.id = 'gap-block2';
     gapBlock2.querySelector('div.mb-val').id = 'gap-block-val2';
     gapBlock2.querySelector('div.mb-pulses').id = 'gap-block-p2';
     vis.appendChild(gapBlock2);
     addText('+');
-    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtPulses);
+    addBlock('mb-stmt','Statement (s)', p.phrase.split(' ').slice(0,3).join(' ')+'…', p.stmtBeats);
     addText('=');
     const totalBlock = document.createElement('div');
     totalBlock.className = 'mora-block-big';
     totalBlock.id = 'total-block';
     totalBlock.style.borderColor = 'var(--border2)'; totalBlock.style.color = 'var(--text-dim)';
-    totalBlock.innerHTML = `<div class="mb-label">Total</div><div class="mb-val" id="total-block-val">—</div><div class="mb-pulses">pulses</div>`;
+    totalBlock.innerHTML = `<div class="mb-label">Total</div><div class="mb-val" id="total-block-val">—</div><div class="mb-pulses">beats</div>`;
     vis.appendChild(totalBlock);
   }
 
   function updateDisplay() {
     if (!currentPuzzle) return;
     const p = currentPuzzle;
-    const total = 3 * p.stmtPulses + 2 * gapVal;
-    const target = p.targetCycles * p.pulsesPerCycle;
+    const total = 3 * p.stmtBeats + 2 * gapVal;
+    const target = p.targetCycles * p.beatsPerCycle;
     const pct = Math.min(100, Math.round(total / target * 100));
 
     document.getElementById('total-pulses').textContent = total;
     document.getElementById('gap-block-val').textContent = gapVal > 0 ? 'tām' : '?';
-    document.getElementById('gap-block-p').textContent = gapVal > 0 ? `${gapVal}p` : '?p';
+    document.getElementById('gap-block-p').textContent = gapVal > 0 ? `${gapVal}b` : '?b';
     const v2 = document.getElementById('gap-block-val2'); if(v2) v2.textContent = gapVal>0?'tām':'?';
-    const p2 = document.getElementById('gap-block-p2'); if(p2) p2.textContent = gapVal>0?`${gapVal}p`:'?p';
+    const p2 = document.getElementById('gap-block-p2'); if(p2) p2.textContent = gapVal>0?`${gapVal}b`:'?b';
     document.getElementById('total-block-val').textContent = total;
 
     const fill = document.getElementById('prog-fill');
@@ -274,7 +274,7 @@
     } else {
       fill.style.background = 'var(--accent)';
       disp.className = 'total-display';
-      disp.textContent = `${total} / ${target} pulses`;
+      disp.textContent = `${total} / ${target} beats`;
     }
   }
 
@@ -288,14 +288,14 @@
     if (!currentPuzzle) return;
     initAudio();
     const p = currentPuzzle;
-    const total = 3 * p.stmtPulses + 2 * gapVal;
-    const target = p.targetCycles * p.pulsesPerCycle;
+    const total = 3 * p.stmtBeats + 2 * gapVal;
+    const target = p.targetCycles * p.beatsPerCycle;
     const correct = total === target && gapVal > 0;
 
     const fb = document.getElementById('feedback');
     if (correct) {
       fb.className = 'feedback correct';
-      fb.textContent = `✓ Correct! g = ${gapVal} pulses. Mōrā = 3×${p.stmtPulses} + 2×${gapVal} = ${total} pulses = ${p.targetCycles} cycles. Lands on sam!`;
+      fb.textContent = `✓ Correct! g = ${gapVal} beats. Mōrā = 3×${p.stmtBeats} + 2×${gapVal} = ${total} beats = ${p.targetCycles} cycles. Lands on sam!`;
       score += 20 + (p.level * 5);
       solvedCount++;
       document.getElementById('score').textContent = score;
@@ -305,14 +305,14 @@
       setTimeout(() => playTone(1100, 0.2, 0.14), 200);
     } else if (total === 0 || gapVal === 0) {
       fb.className = 'feedback wrong';
-      fb.textContent = `The gap must be at least 1 pulse. Try adjusting g.`;
+      fb.textContent = `The gap must be at least 1 beat. Try adjusting g.`;
     } else if (total > target) {
       fb.className = 'feedback wrong';
-      fb.textContent = `Over by ${total-target} pulses. Lower the gap.`;
+      fb.textContent = `Over by ${total-target} beats. Lower the gap.`;
       playTone(220, 0.2, 0.1);
     } else {
       fb.className = 'feedback wrong';
-      fb.textContent = `Not quite — ${target-total} pulses short. Try a larger gap.`;
+      fb.textContent = `Not quite — ${target-total} beats short. Try a larger gap.`;
       playTone(220, 0.2, 0.1);
     }
     document.getElementById('next-btn').classList.toggle('show', correct);
@@ -321,15 +321,15 @@
   function showHint() {
     if (!currentPuzzle) return;
     const p = currentPuzzle;
-    const target = p.targetCycles * p.pulsesPerCycle;
-    const remainder = target - 3 * p.stmtPulses;
+    const target = p.targetCycles * p.beatsPerCycle;
+    const remainder = target - 3 * p.stmtBeats;
     const gSolution = remainder / 2;
     const hint = document.getElementById('hint-box');
     hint.classList.add('show');
     if (Number.isInteger(gSolution) && gSolution > 0) {
-      hint.innerHTML = `<strong>Hint:</strong> Target = ${target} pulses. Three statements = 3 × ${p.stmtPulses} = ${3*p.stmtPulses} pulses. Remaining for two gaps = ${target} − ${3*p.stmtPulses} = ${remainder} pulses. So g = ${remainder} ÷ 2 = <strong>${gSolution}</strong>.`;
+      hint.innerHTML = `<strong>Hint:</strong> Target = ${target} beats. Three statements = 3 × ${p.stmtBeats} = ${3*p.stmtBeats} beats. Remaining for two gaps = ${target} − ${3*p.stmtBeats} = ${remainder} beats. So g = ${remainder} ÷ 2 = <strong>${gSolution}</strong>.`;
     } else {
-      hint.innerHTML = `<strong>Hint:</strong> The total must equal ${target} pulses. You have 3 statements of ${p.stmtPulses} = ${3*p.stmtPulses} pulses. The two gaps must account for the rest.`;
+      hint.innerHTML = `<strong>Hint:</strong> The total must equal ${target} beats. You have 3 statements of ${p.stmtBeats} = ${3*p.stmtBeats} beats. The two gaps must account for the rest.`;
     }
   }
 
@@ -338,18 +338,16 @@
     initAudio();
     const p = currentPuzzle;
     const syllables = p.phrase.split(' ');
-    const pulseMs = 150; // each pulse = 150ms
+    const beatMs = 250; // each beat = 250ms
     let t = 0;
-    // Play 3 statements with gaps
     for (let rep = 0; rep < 3; rep++) {
       syllables.forEach((s, i) => {
-        setTimeout(() => playTone(523 + i * 30, 0.08, 0.12), t);
-        t += pulseMs;
+        setTimeout(() => playTone(523 + i * 30, 0.18, 0.12), t);
+        t += beatMs;
       });
       if (rep < 2) {
-        // Gap = held note
-        setTimeout(() => playTone(300, gapVal * pulseMs / 1000 * 0.9, 0.08), t);
-        t += gapVal * pulseMs;
+        setTimeout(() => playTone(300, gapVal * beatMs / 1000 * 0.9, 0.08), t);
+        t += gapVal * beatMs;
       }
     }
     // Sam ping at the end
