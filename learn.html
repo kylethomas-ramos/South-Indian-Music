@@ -120,7 +120,7 @@
       <!-- MODULE 2: TRIKALA -->
       <div class="module">
         <div class="module-title">Trikāla — Three Speeds</div>
-        <div class="module-desc">The most fundamental process in Karnatak rhythm: a phrase is spoken at normal speed, then doubled, then doubled again — all while the tāḷa stays constant. Try it with <em>ta ki ṭa</em> in tiśra jāti ēka tāḷa (3 beats).</div>
+        <div class="module-desc">The most fundamental process in Karnatak rhythm: the same phrase is performed at three speeds — while the tāḷa cycle stays constant. Listen to <em>ta ki ṭa</em> speed up as the highlighted card changes.</div>
 
         <div class="trikala-box">
           <div class="trikala-speeds">
@@ -289,7 +289,6 @@
     if (triPlaying) {
       triPlaying = false;
       clearTimeout(triTimeout);
-      window.speechSynthesis.cancel();
       triBtn.textContent = '▶ Play Trikāla';
       triStatus.textContent = 'Stopped.';
       triIndicator.classList.remove('on');
@@ -339,15 +338,10 @@
         triStatus.textContent = labels[[1,2,4].indexOf(step.mult)];
         currentMult = step.mult;
       }
-      // Play tone + speak syllable on onsets
-      const TRIKALA_SYLS = ['ta', 'kee', 'da'];
+      // Play a clean tone on each syllable onset
       const pulsesPerSyl = 4 / step.mult;
       if (step.sub % pulsesPerSyl === 0) {
         playTone(523, 0.07, step.beat === 0 && step.sub === 0 ? 0.18 : 0.10);
-        window.speechSynthesis.cancel();
-        const utt = new SpeechSynthesisUtterance(TRIKALA_SYLS[step.beat]);
-        utt.rate = 1.4;
-        window.speechSynthesis.speak(utt);
       }
       i++;
       triTimeout = setTimeout(tick, intervalMs);
